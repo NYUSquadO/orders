@@ -1,3 +1,11 @@
+---
+name: User Story
+about: Create a User Story for Agile Planning.
+title: ''
+labels: ''
+assignees: ''
+
+---
 
 **As a** [Role]  
 **I need** [Function]  
