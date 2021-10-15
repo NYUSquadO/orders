@@ -1,7 +1,8 @@
 """
-My Service
+Order Service
 
-Describe what your service does here
+# TODO: Describe what service does here
+A collection of order items created from products and quantity
 """
 
 import os
