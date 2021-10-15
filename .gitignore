@@ -6,6 +6,7 @@ Thumbs.db
 .vscode/
 .noseids
 .sonarlint/
+.idea/
 
 # Vagrant
 .vagrant
