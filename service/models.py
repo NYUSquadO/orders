@@ -1,5 +1,5 @@
 """
-Models for OrderResourceModel
+Models for Order
 
 All of the models are stored in this module
 """
@@ -17,63 +17,113 @@ class DataValidationError(Exception):
 
     pass
 
+class OrderItem(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    order_id = db.Column(db.Integer, db.ForeignKey('order.id'))
+    item_id = db.Column(db.Integer) #Product ID
+    item_name = db.Column(db.String(100), nullable=False) #Product name
+    item_qty = db.Column(db.Integer)
+    item_price = db.Column(db.Float)
 
-class OrderResourceModel(db.Model):
+
+    def serialize(self):
+        """
+        Serializes OrderItem into dictionary
+        """
+        return {
+            "id" : self.id,
+            "order_id" : self.order_id,
+            "item_id" : self.item_id,
+            "item_name" : self.item_name,
+            "item_qty" : self.item_qty,
+            "item_price" : self.item_price
+        }
+
+    def deserialize(self, data):
+        """ 
+        Deserializes OrderItem from a dictionary
+        """
+        try:
+            self.order_id = data["order_id"]
+            self.item_id = data["item_id"]
+            self.item_name = data["item_name"]
+            self.item_qty = data["item_qty"]
+            self.item_price = data["item_price"]
+        except KeyError as error:
+            raise DataValidationError(
+                "Invalid OrderItem: missing " + error.args[0]
+            )
+        except TypeError as error:
+            raise DataValidationError(
+                "Invalid OrderItem: body of request contained bad or no data"
+            )
+        return self
+
+
+class Order(db.Model):
     """
-    Class that represents a <your resource model name>
+    Class that represents a Order
     """
 
     app = None
 
     # Table Schema
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(63))
+    id = db.Column(db.Integer, primary_key=True) #Order ID
+    cust_id  = db.Column(db.Integer)             #Customer ID for the order
+    order_items = db.relationship('OrderItem', backref='order', lazy = True, cascade = "all,delete") #Items in the order
 
     def __repr__(self):
-        return "<OrderResourceModel %r id=[%s]>" % (self.name, self.id)
+        return "<Order %r id=[%s]>" % (self.name, self.id)
 
     def create(self):
         """
-        Creates a OrderResourceModel to the database
+        Creates an Order to the database
         """
-        logger.info("Creating %s", self.name)
+        logger.info("Creating order for customer :: %s", self.cust_id)
         self.id = None  # id must be none to generate next primary key
         db.session.add(self)
         db.session.commit()
 
     def save(self):
         """
-        Updates a OrderResourceModel to the database
+        Updates an Order to the database
         """
-        logger.info("Saving %s", self.name)
+        logger.info("Saving order for customer :: %s", self.cust_id)
         db.session.commit()
 
     def delete(self):
-        """ Removes a OrderResourceModel from the data store """
-        logger.info("Deleting %s", self.name)
+        """ Removes an Order from the data store """
+        logger.info("Deleting order for customer :: %s", self.cust_id)
         db.session.delete(self)
         db.session.commit()
 
     def serialize(self):
-        """ Serializes a OrderResourceModel into a dictionary """
-        return {"id": self.id, "name": self.name}
+        """ Serializes an Order into a dictionary """
+        return {
+            "id": self.id, 
+            "cust_id": self.cust_id,
+            "order_items": [order_item.serialize() for order_item in self.order_items]}
 
     def deserialize(self, data):
         """
-        Deserializes a OrderResourceModel from a dictionary
+        Deserializes an Order from a dictionary
 
         Args:
-            data (dict): A dictionary containing the resource data
+            data (dict): A dictionary containing the order data
         """
-        try:
-            self.name = data["name"]
+        try:    
+            self.cust_id = data["cust_id"]
+            order_items = data["order_items"]
+            for order_item in order_items:
+                self.order_items.append(OrderItem(order_id = order_item['order_id'], item_id = order_item['item_id'] , \
+                    item_name = order_item['item_name'] , item_qty = order_item['item_qty'], item_price = order_item['item_price'] ))
         except KeyError as error:
             raise DataValidationError(
-                "Invalid OrderResourceModel: missing " + error.args[0]
+                "Invalid Order: missing " + error.args[0]
             )
         except TypeError as error:
             raise DataValidationError(
-                "Invalid OrderResourceModel: body of request contained bad or no data"
+                "Invalid Order: body of request contained bad or no data"
             )
         return self
 
@@ -89,28 +139,28 @@ class OrderResourceModel(db.Model):
 
     @classmethod
     def all(cls):
-        """ Returns all of the OrderResourceModels in the database """
-        logger.info("Processing all OrderResourceModels")
+        """ Returns all of the Orders in the database """
+        logger.info("Processing all Orders")
         return cls.query.all()
 
     @classmethod
     def find(cls, by_id):
-        """ Finds a OrderResourceModel by it's ID """
+        """ Finds a Order by it's ID """
         logger.info("Processing lookup for id %s ...", by_id)
         return cls.query.get(by_id)
 
-    @classmethod
-    def find_or_404(cls, by_id):
-        """ Find a OrderResourceModel by it's id """
-        logger.info("Processing lookup or 404 for id %s ...", by_id)
-        return cls.query.get_or_404(by_id)
+    #@classmethod
+    #def find_or_404(cls, by_id):
+        """ Find a Order by it's id """
+        #logger.info("Processing lookup or 404 for id %s ...", by_id)
+        #return cls.query.get_or_404(by_id)
 
-    @classmethod
-    def find_by_name(cls, name):
-        """Returns all OrderResourceModels with the given name
+    #@classmethod
+    #def find_by_name(cls, name):
+        """Returns all Orders with the given name
 
         Args:
-            name (string): the name of the OrderResourceModels you want to match
+            name (string): the name of the Orders you want to match
         """
-        logger.info("Processing name query for %s ...", name)
-        return cls.query.filter(cls.name == name)
+        #logger.info("Processing name query for %s ...", name)
+        #return cls.query.filter(cls.name == name)
