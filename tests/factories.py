@@ -17,7 +17,20 @@ Test Factory to make fake objects for testing
 """
 import factory
 from factory.fuzzy import FuzzyChoice
-from service.models import Order
+from service.models import OrderItem, Order
+
+class OrderItemFactory(factory.Factory):
+    """Creates fake orderitems that you don't have to feed"""
+
+    class Meta:
+        model = OrderItem
+
+    id = factory.Sequence(lambda n: n)
+    order_id = FuzzyChoice(choices = [1,2,3,4,5,6,7,8,9,10])
+    item_id = FuzzyChoice(choices = [11,22, 33, 44, 55])
+    item_name = FuzzyChoice(choices=["iphone13", "ipad", "Macbook", "ipods"])
+    item_qty = FuzzyChoice(choices = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+    item_price = FuzzyChoice(choices=["9999", "888", "66", "5"])
 
 
 class OrderFactory(factory.Factory):
@@ -27,4 +40,5 @@ class OrderFactory(factory.Factory):
         model = Order
 
     id = factory.Sequence(lambda n: n)
-    cust_id = factory.Sequence(lambda n: n)
+    cust_id = FuzzyChoice(choices = [101, 102, 103, 104])
+    order_items = [OrderItemFactory()]
