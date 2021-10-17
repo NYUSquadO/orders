@@ -117,3 +117,8 @@ class TestOrderResourceServer(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(data["id"], test_order.id)
+
+    def test_get_order_not_found(self):
+        """Get an Order thats not found"""
+        resp = self.app.get("/orders/0")
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
