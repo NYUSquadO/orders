@@ -11,6 +11,9 @@ logger = logging.getLogger("flask.app")
 # Create the SQLAlchemy object to be initialized later in init_db()
 db = SQLAlchemy()
 
+def init_db(app):
+    """Initialies the SQLAlchemy app"""
+    Order.init_db(app)
 
 class DataValidationError(Exception):
     """ Used for an data validation errors when deserializing """
@@ -73,7 +76,7 @@ class Order(db.Model):
     order_items = db.relationship('OrderItem', backref='order', lazy = True, cascade = "all,delete") #Items in the order
 
     def __repr__(self):
-        return "<Order %r id=[%s]>" % (self.name, self.id)
+        return "<Order id=[%s] placed by cust_id=[%s]>" % (self.id, self.cust_id)
 
     def create(self):
         """
