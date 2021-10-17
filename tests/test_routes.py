@@ -103,3 +103,14 @@ class TestOrderResourceServer(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), 5)
+
+    def test_get_order(self):
+        """Get a single Order"""
+        # get the id of an order
+        test_order = self._create_orders(1)[0]
+        resp = self.app.get(
+            "/orders/{}".format(test_order.id), content_type=CONTENT_TYPE_JSON
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(data["id"], test_order.id)
