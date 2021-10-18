@@ -191,7 +191,7 @@ class TestOrder(unittest.TestCase):
 
         # make sure they got updated
         self.assertEqual(len(Order.all()), 2)
-        # find the 2nd pet in the list
+        # find the 2nd order in the list
         order_result = Order.find(order_2.id)
         self.assertIsNot(order_result, None)
         self.assertEqual(order_result.id, order_2.id)

@@ -96,6 +96,29 @@ class TestOrderResourceServer(TestCase):
         # resp = self.app.get(location, content_type=CONTENT_TYPE_JSON)
         # self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
+    def test_create_order_no_data(self):
+        """ Create Order with missing data """
+        resp = self.app.post(
+            BASE_URL, json={}, content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_order_no_content_type(self):
+        """ Create a Order with no content type """
+        resp = self.app.post(BASE_URL)
+        self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+
+    def test_create_order_bad_custid(self):
+        """ Create Order with bad Customer ID data """
+        order = OrderFactory()
+        logging.debug(order)
+        test_order = order.serialize()
+        test_order["cust_id"] = "CUST_ID"    # wrong data type
+        resp = self.app.post(
+            BASE_URL, json=test_order, content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_get_order_list(self):
         """Get a list of Orders"""
         self._create_orders(5)

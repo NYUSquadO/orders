@@ -42,27 +42,6 @@ class OrderItem(db.Model):
             "item_price" : self.item_price
         }
 
-    def deserialize(self, data):
-        """ 
-        Deserializes OrderItem from a dictionary
-        """
-        try:
-            self.order_id = data["order_id"]
-            self.item_id = data["item_id"]
-            self.item_name = data["item_name"]
-            self.item_qty = data["item_qty"]
-            self.item_price = data["item_price"]
-        except KeyError as error:
-            raise DataValidationError(
-                "Invalid OrderItem: missing " + error.args[0]
-            )
-        except TypeError as error:
-            raise DataValidationError(
-                "Invalid OrderItem: body of request contained bad or no data"
-            )
-        return self
-
-
 class Order(db.Model):
     """
     Class that represents a Order
@@ -115,11 +94,17 @@ class Order(db.Model):
             data (dict): A dictionary containing the order data
         """
         try:    
-            self.cust_id = data["cust_id"]
+            if isinstance(data["cust_id"], int):
+                self.cust_id = data["cust_id"]
+            else:
+                raise DataValidationError("Invalid type for int [cust_id]: " + type(data["cust_id"]))
+
             order_items = data["order_items"]
+
             for order_item in order_items:
                 self.order_items.append(OrderItem(order_id = order_item['order_id'], item_id = order_item['item_id'] , \
                     item_name = order_item['item_name'] , item_qty = order_item['item_qty'], item_price = order_item['item_price'] ))
+
         except KeyError as error:
             raise DataValidationError(
                 "Invalid Order: missing " + error.args[0]
