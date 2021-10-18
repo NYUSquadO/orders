@@ -38,7 +38,7 @@ def index():
     )
 
 ######################################################################
-# ORDERS
+# CREATE ORDER
 ######################################################################
 @app.route("/orders", methods=["POST"])
 def create_order():
@@ -52,14 +52,30 @@ def create_order():
     order.deserialize(request.get_json())
     order.create()
     message = order.serialize()
-    #Need to implement get_order
-    #location_url = url_for("get_order", order_id=order.id, _external=True)
-    location_url = "To do"
+    location_url = url_for("get_order", order_id=order.id, _external=True)
 
     app.logger.info("Order with ID [%s] created.", order.id)
     print("done")
-    return message, status.HTTP_201_CREATED, {"Location": location_url}
+    return make_response(
+        jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
+    )
 
+######################################################################
+# DELETE ORDER
+######################################################################
+@app.route("/orders/<int:order_id>", methods=["DELETE"])
+def delete_order(order_id):
+    """
+    Deletes an Order
+    This endpoint will delete an Order based on the id specified in the path
+    """
+    app.logger.info("Request to delete order with id: %s", order_id)
+    order = Order.find(order_id)
+    if order:
+        order.delete()
+
+    app.logger.info("Order with ID [%s] delete complete.", order_id)
+    return make_response("", status.HTTP_204_NO_CONTENT)
 
 ######################################################################
 # LIST ALL ORDERS
