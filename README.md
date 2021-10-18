@@ -96,7 +96,7 @@ $ vagrant destroy
 | create_order | POST   |   /orders  |  Create an order based on the data in the body that is posted  
 | list_orders   |  GET     |  /orders            |             Return all of the Orders
 | get_order    | GET    |  /orders/\<int:order_id>       |   Retrieve a single Order
-| update_order | PUT     | /orders/\<int:order_id>      |   update an Order based the body that is posted
+| update_order | PUT     | /orders/\<int:order_id>      |   Update an Order based on the body that is posted
 | delete_order   |   DELETE | /orders/\<int:order_id>   |    Delete an Order based on the id specified in the path
 
 <!--
