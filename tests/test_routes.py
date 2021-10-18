@@ -89,15 +89,29 @@ class TestOrderResourceServer(TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
         # Make sure location header is set
-        # location = resp.headers.get("Location", None)
-        # self.assertIsNotNone(location)
+        location = resp.headers.get("Location", None)
+        self.assertIsNotNone(location)
         # Check the data is correct
         new_order = resp.get_json()
         print(new_order)
         self.assertEqual(new_order["cust_id"], test_order.cust_id, "cust_id do not match")
         # Check that the location header was correct
-        # resp = self.app.get(location, content_type=CONTENT_TYPE_JSON)
-        # self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        resp = self.app.get(location, content_type=CONTENT_TYPE_JSON)
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+    def test_delete_order(self):
+        """Delete an order"""
+        test_order = self._create_orders(1)[0]
+        resp = self.app.delete(
+            "{0}/{1}".format(BASE_URL, test_order.id), content_type=CONTENT_TYPE_JSON
+        )
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(len(resp.data), 0)
+        # make sure they are deleted
+        resp = self.app.get(
+            "{0}/{1}".format(BASE_URL, test_order.id), content_type=CONTENT_TYPE_JSON
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_create_order_no_data(self):
         """ Create Order with missing data """
