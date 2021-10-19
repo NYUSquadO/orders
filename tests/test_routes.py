@@ -159,3 +159,35 @@ class TestOrderResourceServer(TestCase):
         """Get an Order thats not found"""
         resp = self.app.get("/orders/0")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_order(self):
+        """ Update an existing Order """
+        # create an Order to update
+        test_order = OrderFactory()
+        logging.debug(test_order)
+        resp = self.app.post(
+            "/orders", 
+            json=test_order.serialize(), 
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        # update the cust_id
+        new_order = resp.get_json()
+        print(new_order["cust_id"])
+        new_order["cust_id"] = 23
+        print(new_order["id"])
+        resp = self.app.put(
+            "/orders/{}".format(new_order["id"]),
+            json=new_order,
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        updated_order = resp.get_json()
+        self.assertEqual(updated_order["cust_id"], 23)
+
+    def test_update_order_not_found(self):
+        """Try to Update an non-existing Order"""
+        test_order = OrderFactory()
+        resp = self.app.put("/orders/0", json=test_order.serialize(),content_type="application/json",)
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
