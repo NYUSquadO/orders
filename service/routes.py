@@ -148,12 +148,12 @@ def add_item(order_id):
     )
 
 ######################################################################
-# RETRIEVE ITEMS IN AN ORDER
+# LIST ALL ITEMS IN AN ORDER
 ######################################################################
 @app.route("/orders/<int:order_id>/items", methods=["GET"])
 def get_items_in_order(order_id):
     """
-    Retrieve all items in an order
+    Get all items in an order
     This endpoint will return a list of items in an Order based on it's order_id
     """
     app.logger.info("Request all items for order with id: %s", order_id)
