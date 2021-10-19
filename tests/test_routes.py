@@ -135,7 +135,7 @@ class TestOrderResourceServer(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_get_order_list(self):
-        """Get a list of Orders"""
+        """List all Orders"""
         self._create_orders(5)
         resp = self.app.get("/orders")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
@@ -266,3 +266,20 @@ class TestOrderResourceServer(TestCase):
             content_type=CONTENT_TYPE_JSON
         )
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_get_items_in_order(self):
+        """List all items in an order"""
+        # get the id of an order
+        test_order = self._create_orders(1)[0]
+        resp = self.app.get(
+            "/orders/{}/items".format(test_order.id), content_type=CONTENT_TYPE_JSON
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), len(test_order.order_items))
+
+    def test_get_items_in_order_not_found(self):
+        """List all items in an non-existing order"""
+        resp = self.app.get("/orders/0/items")
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+    
