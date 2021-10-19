@@ -283,3 +283,30 @@ class TestOrderResourceServer(TestCase):
         resp = self.app.get("/orders/0/items")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
     
+    def test_delete_item_in_order(self):
+        """ Delete an Item in an order"""
+        # Create a test_order
+        order = self._create_orders(1)[0]
+        # Add a test_item
+        test_order_item = OrderItemFactory()
+        logging.debug(test_order_item)
+        resp = self.app.post(
+            "{0}/{1}/items".format(BASE_URL, order.id),
+            json=test_order_item.serialize(), 
+            content_type=CONTENT_TYPE_JSON
+        )
+        new_order_item = resp.get_json()
+        item_id = new_order_item['id']
+        resp = self.app.delete("/orders/{}/items/{}".format(order.id, item_id))
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_delete_item_order_not_found(self):
+        """ Delete an Item where order does not exist"""
+        resp = self.app.delete("/orders/{}/items/{}".format(0, 0))
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_item_item_not_found(self):
+        """ Delete an Item where item does not exist"""
+        order = self._create_orders(1)[0]
+        resp = self.app.delete("/orders/{}/items/{}".format(order.id, 0))
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
