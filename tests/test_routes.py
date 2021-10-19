@@ -297,6 +297,7 @@ class TestOrderResourceServer(TestCase):
         )
         new_order_item = resp.get_json()
         item_id = new_order_item['id']
+        # Delete the item
         resp = self.app.delete("/orders/{}/items/{}".format(order.id, item_id))
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
