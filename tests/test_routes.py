@@ -11,7 +11,7 @@ from unittest import TestCase
 from service import status  # HTTP Status Codes
 from service.models import db, init_db
 from service.routes import app
-from .factories import OrderFactory
+from .factories import OrderFactory, OrderItemFactory
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgres://postgres:postgres@localhost:5432/postgres"
@@ -80,7 +80,7 @@ class TestOrderResourceServer(TestCase):
         self.assertIn("/orders",data["paths"])
 
     def test_create_order(self):
-        """Create a new order"""
+        """Create Order"""
         test_order = OrderFactory()
         logging.debug(test_order)
         resp = self.app.post(
@@ -92,14 +92,13 @@ class TestOrderResourceServer(TestCase):
         self.assertIsNotNone(location)
         # Check the data is correct
         new_order = resp.get_json()
-        print(new_order)
         self.assertEqual(new_order["cust_id"], test_order.cust_id, "cust_id do not match")
         # Check that the location header was correct
         resp = self.app.get(location, content_type=CONTENT_TYPE_JSON)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     def test_delete_order(self):
-        """Delete an order"""
+        """Delete Order"""
         test_order = self._create_orders(1)[0]
         resp = self.app.delete(
             "{0}/{1}".format(BASE_URL, test_order.id), content_type=CONTENT_TYPE_JSON
@@ -169,9 +168,7 @@ class TestOrderResourceServer(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
         # update the cust_id
         new_order = resp.get_json()
-        print(new_order["cust_id"])
         new_order["cust_id"] = 23
-        print(new_order["id"])
         resp = self.app.put(
             "/orders/{}".format(new_order["id"]),
             json=new_order,
@@ -184,6 +181,88 @@ class TestOrderResourceServer(TestCase):
     def test_update_order_not_found(self):
         """Try to Update an non-existing Order"""
         test_order = OrderFactory()
-        resp = self.app.put("/orders/0", json=test_order.serialize(), \
-            content_type="application/json")
+        resp = self.app.put("/orders/0", json=test_order.serialize(),content_type="application/json",)
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_add_item(self):
+        """Add OrderItem"""
+        # Create a test_order
+        test_order = self._create_orders(1)[0]
+        # Create a test_item
+        test_order_item = OrderItemFactory()
+        logging.debug(test_order_item)
+        resp = self.app.post(
+            "{0}/{1}/items".format(BASE_URL, test_order.id),
+            json=test_order_item.serialize(), 
+            content_type=CONTENT_TYPE_JSON
+        )
+        new_order_item = resp.get_json()
+        self.assertEqual(test_order.id, new_order_item['order_id'])
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+    def test_add_item_missing_data(self):
+        """Add OrderItem with Missing Data"""
+        # Create a test_order
+        test_order = self._create_orders(1)[0]
+        resp = self.app.post(
+            "{0}/{1}/items".format(BASE_URL, test_order.id),
+            json={}, 
+            content_type=CONTENT_TYPE_JSON
+        )
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_add_item_no_content(self):
+        """Add OrderItem No Content"""
+        # Create a test_order
+        test_order = self._create_orders(1)[0]
+        resp = self.app.post("{0}/{1}/items".format(BASE_URL, test_order.id))
+        self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+
+    def test_add_item_wrong_type(self):
+        """Add OrderItem Wrong Type"""
+        # Create a test_order
+        test_order = self._create_orders(1)[0]
+
+        # Create a test_item with wrong item_id type
+        test_order_item = OrderItemFactory()
+        logging.debug(test_order_item)
+        test_order_item.item_id = "ID"
+        resp = self.app.post(
+            "{0}/{1}/items".format(BASE_URL, test_order.id),
+            json=test_order_item.serialize(), 
+            content_type=CONTENT_TYPE_JSON
+        )
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # Create a test_item with wrong item_name type
+        test_order_item = OrderItemFactory()
+        logging.debug(test_order_item)
+        test_order_item.item_name = 0
+        resp = self.app.post(
+            "{0}/{1}/items".format(BASE_URL, test_order.id),
+            json=test_order_item.serialize(), 
+            content_type=CONTENT_TYPE_JSON
+        )
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # Create a test_item with wrong item_qty type
+        test_order_item = OrderItemFactory()
+        logging.debug(test_order_item)
+        test_order_item.item_qty = "QTY"
+        resp = self.app.post(
+            "{0}/{1}/items".format(BASE_URL, test_order.id),
+            json=test_order_item.serialize(), 
+            content_type=CONTENT_TYPE_JSON
+        )
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+        # Create a test_item with wrong item_price type
+        test_order_item = OrderItemFactory()
+        logging.debug(test_order_item)
+        test_order_item.item_price = "PRICE"
+        resp = self.app.post(
+            "{0}/{1}/items".format(BASE_URL, test_order.id),
+            json=test_order_item.serialize(), 
+            content_type=CONTENT_TYPE_JSON
+        )
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
