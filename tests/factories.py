@@ -26,11 +26,11 @@ class OrderItemFactory(factory.Factory):
         model = OrderItem
 
     id = factory.Sequence(lambda n: n)
-    order_id = FuzzyChoice(choices = [1,2,3,4,5,6,7,8,9,10])
+    # order_id = FuzzyChoice(choices = [1,2,3,4,5,6,7,8,9,10])
     item_id = FuzzyChoice(choices = [11,22, 33, 44, 55])
     item_name = FuzzyChoice(choices=["iphone13", "ipad", "Macbook", "ipods"])
     item_qty = FuzzyChoice(choices = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-    item_price = FuzzyChoice(choices=["9999", "888", "66", "5"])
+    item_price = FuzzyChoice(choices=[9999.0, 888.0, 66.0, 5.0])
 
 
 class OrderFactory(factory.Factory):

@@ -17,7 +17,7 @@ from werkzeug.exceptions import NotFound
 # For this example we'll use SQLAlchemy, a popular ORM that supports a
 # variety of backends including SQLite, MySQL, and PostgreSQL
 from flask_sqlalchemy import SQLAlchemy
-from service.models import Order, DataValidationError
+from service.models import Order, OrderItem, DataValidationError
 
 # Import Flask application
 from . import app
@@ -55,7 +55,6 @@ def create_order():
     location_url = url_for("get_order", order_id=order.id, _external=True)
 
     app.logger.info("Order with ID [%s] created.", order.id)
-    print("done")
     return make_response(
         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
     )
@@ -134,6 +133,31 @@ def get_order(order_id):
 
     app.logger.info("Returning order: %s", order.id)
     return make_response(jsonify(order.serialize()), status.HTTP_200_OK)
+
+######################################################################
+# ADD ITEM
+######################################################################
+@app.route("/orders/<int:order_id>/items", methods=["POST"])
+def add_item(order_id):
+    """
+    Add an Item
+    This endpoint will add an Item to the Order based the data in the body and the order_id
+    """
+    app.logger.info("Request to add an item")
+    check_content_type("application/json")
+    order = Order.find_or_404(order_id)
+    order_item = OrderItem()
+    order_item.deserialize(request.get_json())
+    order.order_items.append(order_item)
+    order.save()
+    message = order_item.serialize()
+    # location_url = url_for("get_item", order_id=order.id, item_id=order_item.id, _external=True)
+    location_url = "To be implemented"
+
+    app.logger.info("Item with ID [%s] added.", order_item.id)
+    return make_response(
+        jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
+    )
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S

@@ -41,6 +41,38 @@ class OrderItem(db.Model):
             "item_qty" : self.item_qty,
             "item_price" : self.item_price
         }
+    
+    def deserialize(self, data):
+        """
+        Deserializes a OrderItem from a dictionary
+        Args:
+            data (dict): A dictionary containing the resource data
+        """
+        try:
+            # self.order_id = data["order_id"]
+            if isinstance(data["item_id"], int):
+                self.item_id = data["item_id"]
+            else:
+                raise DataValidationError("Invalid type for int [item_id]: " + type(data["item_id"]))
+            if isinstance(data["item_name"], str):
+                self.item_name = data["item_name"]
+            else:
+                raise DataValidationError("Invalid type for int [item_name]: " + type(data["item_name"]))
+            if isinstance(data["item_qty"], int):
+                self.item_qty = data["item_qty"]
+            else:
+                raise DataValidationError("Invalid type for int [item_qty]: " + type(data["item_qty"]))
+            if isinstance(data["item_price"], float):
+                self.item_price = data["item_price"]
+            else:
+                raise DataValidationError("Invalid type for int [item_price]: " + type(data["item_price"]))
+        except KeyError as error:
+            raise DataValidationError("Invalid OrderItem: missing " + error.args[0])
+        except TypeError as error:
+            raise DataValidationError(
+                "Invalid OrderItem: details of OrderItem contained bad or no data"
+            )
+        return self
 
 class Order(db.Model):
     """
@@ -137,11 +169,11 @@ class Order(db.Model):
         logger.info("Processing lookup for id %s ...", by_id)
         return cls.query.get(by_id)
 
-    #@classmethod
-    #def find_or_404(cls, by_id):
+    @classmethod
+    def find_or_404(cls, by_id):
         """ Find a Order by it's id """
-        #logger.info("Processing lookup or 404 for id %s ...", by_id)
-        #return cls.query.get_or_404(by_id)
+        logger.info("Processing lookup or 404 for id %s ...", by_id)
+        return cls.query.get_or_404(by_id)
 
     #@classmethod
     #def find_by_name(cls, name):
