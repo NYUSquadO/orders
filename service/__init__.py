@@ -11,7 +11,6 @@ from flask import Flask
 
 # Create Flask application
 app = Flask(__name__)
-# TODO: Add database connection info in config.py
 app.config.from_object("config")
 
 # Import the routes After the Flask app is created

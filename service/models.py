@@ -17,10 +17,10 @@ def init_db(app):
 
 class DataValidationError(Exception):
     """ Used for an data validation errors when deserializing """
-
     pass
 
 class OrderItem(db.Model):
+    """Class that represents OrderItem model"""    
     id = db.Column(db.Integer, primary_key = True)
     order_id = db.Column(db.Integer, db.ForeignKey('order.id'))
     item_id = db.Column(db.Integer) #Product ID
@@ -52,7 +52,8 @@ class Order(db.Model):
     # Table Schema
     id = db.Column(db.Integer, primary_key=True) #Order ID
     cust_id  = db.Column(db.Integer)             #Customer ID for the order
-    order_items = db.relationship('OrderItem', backref='order', lazy = True, cascade = "all,delete") #Items in the order
+    order_items = db.relationship('OrderItem', backref='order', lazy = True, \
+        cascade = "all,delete") #Items in the order
 
     def __repr__(self):
         return "<Order id=[%s] placed by cust_id=[%s]>" % (self.id, self.cust_id)
@@ -97,13 +98,16 @@ class Order(db.Model):
             if isinstance(data["cust_id"], int):
                 self.cust_id = data["cust_id"]
             else:
-                raise DataValidationError("Invalid type for int [cust_id]: " + type(data["cust_id"]))
+                raise DataValidationError("Invalid type for int [cust_id]: " \
+                    + type(data["cust_id"]))
 
             order_items = data["order_items"]
 
             for order_item in order_items:
-                self.order_items.append(OrderItem(order_id = order_item['order_id'], item_id = order_item['item_id'] , \
-                    item_name = order_item['item_name'] , item_qty = order_item['item_qty'], item_price = order_item['item_price'] ))
+                self.order_items.append(OrderItem(order_id = order_item['order_id'], \
+                    item_id = order_item['item_id'] , \
+                    item_name = order_item['item_name'] , item_qty = order_item['item_qty'], \
+                    item_price = order_item['item_price'] ))
 
         except KeyError as error:
             raise DataValidationError(
@@ -111,8 +115,7 @@ class Order(db.Model):
             )
         except TypeError as error:
             raise DataValidationError(
-                "Invalid Order: body of request contained bad or no data"
-            )
+                "Invalid Order: body of request contained bad or no data" + error.args[0])
         return self
 
     @classmethod
@@ -136,19 +139,3 @@ class Order(db.Model):
         """ Finds a Order by it's ID """
         logger.info("Processing lookup for id %s ...", by_id)
         return cls.query.get(by_id)
-
-    #@classmethod
-    #def find_or_404(cls, by_id):
-        """ Find a Order by it's id """
-        #logger.info("Processing lookup or 404 for id %s ...", by_id)
-        #return cls.query.get_or_404(by_id)
-
-    #@classmethod
-    #def find_by_name(cls, name):
-        """Returns all Orders with the given name
-
-        Args:
-            name (string): the name of the Orders you want to match
-        """
-        #logger.info("Processing name query for %s ...", name)
-        #return cls.query.filter(cls.name == name)

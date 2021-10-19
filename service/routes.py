@@ -5,19 +5,12 @@ Order Service
 A collection of order items created from products and quantity
 """
 
-import os
-import sys
-import logging
-from flask import Flask, jsonify, request, url_for, make_response, abort
-import werkzeug
+from flask import jsonify, request, url_for, make_response, abort
 
-from . import status  # HTTP Status Codes
 from werkzeug.exceptions import NotFound
+from service.models import Order
+from . import status  # HTTP Status Codes
 
-# For this example we'll use SQLAlchemy, a popular ORM that supports a
-# variety of backends including SQLite, MySQL, and PostgreSQL
-from flask_sqlalchemy import SQLAlchemy
-from service.models import Order, DataValidationError
 
 # Import Flask application
 from . import app
@@ -104,16 +97,7 @@ def list_orders():
     """Returns all of the Orders"""
     app.logger.info("Request for order list")
     orders = []
-    # TODO: find by order_id or cust_id
-    # order_id = request.args.get("id")
-    # cust_id = request.args.get("cust_id")
-    # if order_id:
-    #     orders = Order.find_by_category(order_id)
-    # elif cust_id:
-    #     orders = Order.find_by_name(cust_id)
-    # else:
     orders = Order.all()
-
     results = [order.serialize() for order in orders]
     app.logger.info("Returning %d orders", len(results))
     return make_response(jsonify(results), status.HTTP_200_OK)
