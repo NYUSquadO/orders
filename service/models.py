@@ -74,6 +74,13 @@ class OrderItem(db.Model):
             )
         return self
 
+    def delete(self):
+        """ Removes an Item from the order"""
+        logger.info("Deleting an item from order %s", self.order_id)
+        
+        db.session.delete(self)
+        db.session.commit()
+
 class Order(db.Model):
     """
     Class that represents a Order
@@ -169,11 +176,11 @@ class Order(db.Model):
     @classmethod
     def find(cls, by_id):
         """ Finds a Order by it's ID """
-        logger.info("Processing lookup for id %s ...", by_id)
+        logger.info("Processing lookup for order id %s ...", by_id)
         return cls.query.get(by_id)
         
     @classmethod
     def find_or_404(cls, by_id):
         """ Find a Order by it's id """
-        logger.info("Processing lookup or 404 for id %s ...", by_id)
+        logger.info("Processing lookup or 404 for order id %s ...", by_id)
         return cls.query.get_or_404(by_id)

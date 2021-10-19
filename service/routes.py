@@ -167,6 +167,37 @@ def get_items_in_order(order_id):
     return make_response(jsonify(items_list), status.HTTP_200_OK)
 
 ######################################################################
+# DELETE AN ITEM IN AN ORDER
+######################################################################
+@app.route("/orders/<int:order_id>/items/<int:item_id>", methods=["DELETE"])
+def delete_item(order_id, item_id):
+    """
+    Delete an Item in an Order
+    This endpoint will delete an Item based on the order_id and item_id specified in the path
+    """
+    app.logger.info("Request to delete an item in order %s with item_id: %s", order_id, item_id)
+    order = Order.find(order_id)
+    
+    if not order:
+        raise NotFound("Order with id '{}' was not found.".format(order_id))
+    item_found = False
+    for item in order.order_items:
+        if item.id == item_id:
+            item_found = True
+            item.delete()
+            order.save()
+            break
+    if not item_found:
+        raise NotFound("Item with id '{}' was not found.".format(item_id))
+    # item = order.order_items.find(item_id)
+    # if item:
+    #     item.delete()
+    #     order.save()
+    app.logger.info("Item with ID [%s] in order %s is deleted.", item_id, order_id)
+    
+    return make_response("", status.HTTP_204_NO_CONTENT)
+
+######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
 
