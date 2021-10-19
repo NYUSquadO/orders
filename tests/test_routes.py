@@ -8,7 +8,6 @@ Test cases can be run with the following:
 import os
 import logging
 from unittest import TestCase
-from unittest.mock import MagicMock, patch
 from service import status  # HTTP Status Codes
 from service.models import db, init_db
 from service.routes import app
@@ -165,12 +164,8 @@ class TestOrderResourceServer(TestCase):
         test_order = OrderFactory()
         logging.debug(test_order)
         resp = self.app.post(
-            "/orders", 
-            json=test_order.serialize(), 
-            content_type="application/json"
-        )
+            "/orders", json=test_order.serialize(), content_type="application/json")
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
-
         # update the cust_id
         new_order = resp.get_json()
         new_order["cust_id"] = 23

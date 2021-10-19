@@ -25,7 +25,6 @@ class TestOrder(unittest.TestCase):
         app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
         app.logger.setLevel(logging.CRITICAL)
         Order.init_db(app)
-        pass
 
     @classmethod
     def tearDownClass(cls):
@@ -36,7 +35,8 @@ class TestOrder(unittest.TestCase):
         """ This runs before each test """
         db.drop_all()  # clean up the last tests
         db.create_all()  # make our sqlalchemy tables
-        self.order = Order(cust_id = 999, order_items = [OrderItem(order_id = 1, item_id = 2000, item_name = "IPHONE 13 PRO", \
+        self.order = Order(cust_id = 999, order_items = [OrderItem(order_id = 1, item_id = 2000, \
+            item_name = "IPHONE 13 PRO", \
             item_qty = 1, item_price = 1500)])
 
 
@@ -51,7 +51,7 @@ class TestOrder(unittest.TestCase):
 
     def test_create_order(self):
         """ Test order created successfully"""
-        self.assertTrue(self.order != None)
+        self.assertTrue(self.order is not None)
         self.assertEqual(self.order.id, None)
         self.assertEqual(self.order.cust_id, 999)
         self.assertEqual(len(self.order.order_items), 1)
@@ -64,31 +64,25 @@ class TestOrder(unittest.TestCase):
     def test_add_order(self):
         """Test order added to database"""
         orders = Order.all()
-        self.assertEqual(orders, [])
-        
-        self.assertTrue(self.order != None)
+        self.assertEqual(orders, [])        
+        self.assertTrue(self.order is not None)
         self.assertEqual(self.order.id, None)
         self.order.create()
         self.assertEqual(self.order.id, 1)
         orders = Order.all()
         self.assertEqual(len(orders), 1)
 
-
     def test_update_order(self):
         """Test order updated to database"""
-
         self.order.create()
         self.assertEqual(self.order.id, 1)
-
         self.order.cust_id = 1234
         self.order.order_items[0].item_qty = 2
         original_order_id = self.order.id
-
         self.order.save()
         self.assertEqual(self.order.id, original_order_id)
         self.assertEqual(self.order.cust_id, 1234)
         self.assertEqual(self.order.order_items[0].item_qty, 2)
-
         #Fetch order back and check order ID has not changed but order details updated
         orders = Order.all()
         self.assertEqual(len(orders), 1)
@@ -148,8 +142,7 @@ class TestOrder(unittest.TestCase):
                 "item_name" : "Lenovo Thinkpad",
                 "item_qty" : 1,
                 "item_price" : 2000
-            }]         
-        }
+            }]}
         order = Order()
         order.deserialize(data)
         self.assertNotEqual(order, None)
@@ -184,11 +177,10 @@ class TestOrder(unittest.TestCase):
         self.order.create()
 
         #creating another order
-        order_2 = Order(cust_id = 345, order_items = [OrderItem(order_id = 2, item_id = 5000, item_name = "Lenovo Thinkpad", \
+        order_2 = Order(cust_id = 345, order_items = [OrderItem(order_id = 2, item_id = 5000, \
+            item_name = "Lenovo Thinkpad", \
             item_qty = 1, item_price = 2000)])
-
         order_2.create()
-
         # make sure they got updated
         self.assertEqual(len(Order.all()), 2)
         # find the 2nd order in the list
@@ -203,17 +195,3 @@ class TestOrder(unittest.TestCase):
         self.assertEqual(order_result.order_items[0].item_name, order_2.order_items[0].item_name)
         self.assertEqual(order_result.order_items[0].item_qty, order_2.order_items[0].item_qty)
         self.assertEqual(order_result.order_items[0].item_price, order_2.order_items[0].item_price)
-
-
-
-        
-
-
-
-
-
-
-
-
-
-

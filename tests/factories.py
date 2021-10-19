@@ -23,6 +23,7 @@ class OrderItemFactory(factory.Factory):
     """Creates fake orderitems that you don't have to feed"""
 
     class Meta:
+        """Meta data model for OrderItem"""
         model = OrderItem
 
     id = factory.Sequence(lambda n: n)
@@ -37,6 +38,7 @@ class OrderFactory(factory.Factory):
     """Creates fake orders that you don't have to feed"""
 
     class Meta:
+        """Meta data model for Order"""
         model = Order
 
     id = factory.Sequence(lambda n: n)
