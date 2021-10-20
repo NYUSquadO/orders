@@ -197,6 +197,36 @@ def delete_item(order_id, item_id):
     
     return make_response("", status.HTTP_204_NO_CONTENT)
 
+
+######################################################################
+# READ AN ITEM IN AN ORDER
+######################################################################
+@app.route("/orders/<int:order_id>/items/<int:item_id>", methods=["GET"])
+def read_item(order_id, item_id):
+    """
+    Read an Item in an Order
+    This endpoint will get an Item based on the order_id and item_id specified in the path
+    """
+    app.logger.info("Request to read an item in order %s with item_id: %s", order_id, item_id)
+    order = Order.find(order_id)
+
+    if not order:
+        raise NotFound("Order with id '{}' was not found.".format(order_id))
+    item_found = False
+    item_obj = None
+    for item in order.order_items:
+        if item.id == item_id:
+            item_found = True
+            item_obj = item.serialize()
+            break
+    if not item_found:
+        raise NotFound("Item with id '{}' was not found in order {}.".format(item_id, order_id))
+
+    app.logger.info("Returning Item with ID [%s] in order %s.", item_id, order_id)
+
+    return make_response(jsonify(item_obj), status.HTTP_200_OK)
+
+
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
