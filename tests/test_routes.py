@@ -181,6 +181,7 @@ class TestOrderResourceServer(TestCase):
     def test_update_order_not_found(self):
         """Try to Update an non-existing Order"""
         test_order = OrderFactory()
+        # test a non-existing id
         resp = self.app.put("/orders/0", json=test_order.serialize(),content_type="application/json",)
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -327,7 +328,7 @@ class TestOrderResourceServer(TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
-        # update the cust_id
+        # update the item in order
         new_item = resp.get_json()
         print(new_item["item_qty"])
         new_item["item_qty"] = 23
@@ -343,7 +344,7 @@ class TestOrderResourceServer(TestCase):
         self.assertEqual(updated_order_item["item_qty"], 23)
 
     def test_update_order_item_not_found(self):
-        """ Update an existing Order's Item """
+        """ Update an Order's Item that order misses"""
         # create an Order to update
         test_order = self._create_orders(1)[0]
         # Add a test_item
@@ -357,7 +358,7 @@ class TestOrderResourceServer(TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
-        # update the cust_id
+        # update a non-exisiting order 
         new_item = resp.get_json()
         print(new_item["item_qty"])
         new_item["item_qty"] = 23
@@ -370,7 +371,7 @@ class TestOrderResourceServer(TestCase):
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_update_item_not_found(self):
-        """ Update an existing Order's Item """
+        """ Update an Order's Item that item misses """
         # create an Order to update
         test_order = self._create_orders(1)[0]
         # Add a test_item
@@ -384,7 +385,7 @@ class TestOrderResourceServer(TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
-        # update the cust_id
+        # update a non-exisiting item
         new_item = resp.get_json()
         print(new_item["item_qty"])
         new_item["item_qty"] = 23
