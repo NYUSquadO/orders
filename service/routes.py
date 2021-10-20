@@ -93,6 +93,35 @@ def update_order(order_id):
     return make_response(jsonify(order.serialize()), status.HTTP_200_OK)
 
 ######################################################################
+# UPDATE AN EXISTING ORDER'S ITEMS
+######################################################################
+@app.route("/orders/<int:order_id>/items/<int:item_id>", methods=["PUT"])
+def update_order_item(order_id, item_id):
+    """
+    Update an item in an Order
+    This endpoint will update an Order's item based the id that is posted
+    """
+    app.logger.info("Request to update the item id: %s in order id: %s", item_id, order_id)
+    check_content_type("application/json")
+    order = Order.find(order_id)
+    if not order:
+        raise NotFound("Order with id '{}' was not found.".format(order_id))
+    item_found = False
+    return_item = None
+    for item in order.order_items:
+        if item.id == item_id:
+            item_found = True
+            item.deserialize(request.get_json())
+            item.id = item_id
+            item.save()
+            order.save()
+            return_item = item
+            break
+    if not item_found:
+        raise NotFound("Item with id '{}' was not found.".format(item_id))
+    return make_response(jsonify(return_item.serialize()), status.HTTP_200_OK)
+
+######################################################################
 # LIST ALL ORDERS
 ######################################################################
 @app.route("/orders", methods=["GET"])

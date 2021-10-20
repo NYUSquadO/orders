@@ -81,6 +81,13 @@ class OrderItem(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    def save(self):
+        """
+        Updates an item in an Order to the database
+        """
+        logger.info("Saving item in order :: %s", self.item_id)
+        db.session.commit()
+
 class Order(db.Model):
     """
     Class that represents a Order
