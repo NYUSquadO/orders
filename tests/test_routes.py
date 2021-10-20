@@ -313,6 +313,7 @@ class TestOrderResourceServer(TestCase):
         resp = self.app.delete("/orders/{}/items/{}".format(order.id, 0))
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
+
     def test_update_order_item(self):
         """ Update an existing Order's Item """
         # create an Order to update
@@ -396,3 +397,39 @@ class TestOrderResourceServer(TestCase):
             content_type="application/json",
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_read_item_in_order(self):
+        """ Read an Item in an order"""
+        # Create a test_order
+        order = self._create_orders(1)[0]
+        # Add a test_item
+        test_order_item = OrderItemFactory()
+        logging.debug(test_order_item)
+        resp = self.app.post(
+            "{0}/{1}/items".format(BASE_URL, order.id),
+            json=test_order_item.serialize(),
+            content_type=CONTENT_TYPE_JSON
+        )
+        new_order_item = resp.get_json()
+        item_id = new_order_item['id']
+        # Read the item
+        resp = self.app.get("/orders/{}/items/{}".format(order.id, item_id))
+        data = resp.get_json()
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        print(test_order_item)
+        self.assertEqual(data["item_id"], test_order_item.item_id)
+        self.assertEqual(data["item_name"], test_order_item.item_name)
+        self.assertEqual(data["item_price"], test_order_item.item_price)
+        self.assertEqual(data["item_qty"], test_order_item.item_qty)
+
+    def test_read_item_order_not_found(self):
+        """ Read an Item where order does not exist"""
+        resp = self.app.get("/orders/{}/items/{}".format(0, 0))
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_read_item_item_not_found(self):
+        """ Read an Item where item does not exist"""
+        order = self._create_orders(1)[0]
+        resp = self.app.get("/orders/{}/items/{}".format(order.id, 0))
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
