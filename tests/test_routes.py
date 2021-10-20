@@ -311,3 +311,87 @@ class TestOrderResourceServer(TestCase):
         order = self._create_orders(1)[0]
         resp = self.app.delete("/orders/{}/items/{}".format(order.id, 0))
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_order_item(self):
+        """ Update an existing Order's Item """
+        # create an Order to update
+        test_order = self._create_orders(1)[0]
+        # Add a test_item
+        test_item = OrderItemFactory()
+        logging.debug(test_item)
+        print(test_item.serialize())
+        resp = self.app.post(
+            "{0}/{1}/items".format(BASE_URL, test_order.id),
+            json=test_item.serialize(), 
+            content_type=CONTENT_TYPE_JSON
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        # update the cust_id
+        new_item = resp.get_json()
+        print(new_item["item_qty"])
+        new_item["item_qty"] = 23
+        print(new_item["item_qty"])
+        resp = self.app.put(
+            "/orders/{}/items/{}".format(test_order.id, new_item["id"]),
+            json=new_item,
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        updated_order_item = resp.get_json()
+        print(updated_order_item)
+        self.assertEqual(updated_order_item["item_qty"], 23)
+
+    def test_update_order_item_not_found(self):
+        """ Update an existing Order's Item """
+        # create an Order to update
+        test_order = self._create_orders(1)[0]
+        # Add a test_item
+        test_item = OrderItemFactory()
+        logging.debug(test_item)
+        print(test_item.serialize())
+        resp = self.app.post(
+            "{0}/{1}/items".format(BASE_URL, test_order.id),
+            json=test_item.serialize(), 
+            content_type=CONTENT_TYPE_JSON
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        # update the cust_id
+        new_item = resp.get_json()
+        print(new_item["item_qty"])
+        new_item["item_qty"] = 23
+        print(new_item["item_qty"])
+        resp = self.app.put(
+            "/orders/{}/items/{}".format(100, new_item["id"]),
+            json=new_item,
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_item_not_found(self):
+        """ Update an existing Order's Item """
+        # create an Order to update
+        test_order = self._create_orders(1)[0]
+        # Add a test_item
+        test_item = OrderItemFactory()
+        logging.debug(test_item)
+        print(test_item.serialize())
+        resp = self.app.post(
+            "{0}/{1}/items".format(BASE_URL, test_order.id),
+            json=test_item.serialize(), 
+            content_type=CONTENT_TYPE_JSON
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        # update the cust_id
+        new_item = resp.get_json()
+        print(new_item["item_qty"])
+        new_item["item_qty"] = 23
+        print(new_item["item_qty"])
+        resp = self.app.put(
+            "/orders/{}/items/{}".format(test_order.id, 100),
+            json=new_item,
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
