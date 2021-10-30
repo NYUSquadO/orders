@@ -100,6 +100,7 @@ class Order(db.Model):
     cust_id  = db.Column(db.Integer)             #Customer ID for the order
     order_items = db.relationship('OrderItem', backref='order', lazy = True, \
         cascade = "all,delete") #Items in the order
+    status = db.Column(db.String(80)) # status of the order
 
     def __repr__(self):
         return "<Order id=[%s] placed by cust_id=[%s]>" % (self.id, self.cust_id)
@@ -131,7 +132,9 @@ class Order(db.Model):
         return {
             "id": self.id, 
             "cust_id": self.cust_id,
-            "order_items": [order_item.serialize() for order_item in self.order_items]}
+            "order_items": [order_item.serialize() for order_item in self.order_items],
+            "status": self.status
+            }
 
     def deserialize(self, data):
         """

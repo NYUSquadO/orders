@@ -248,6 +248,22 @@ def read_item(order_id, item_id):
 
     return make_response(jsonify(item_obj), status.HTTP_200_OK)
 
+######################################################################
+# CANCEL AN ORDER
+######################################################################
+@app.route('/orders/<int:order_id>/cancel', methods=['PUT'])
+def cancel_orders(order_id):
+    """
+    Cancel an Order
+    This endpoint will update an Order based the body that is posted
+    """
+    order = Order.find(order_id)
+    if not order:
+        raise NotFound("Order with id '{}' was not found.".format(order_id))
+    order.status = 'Cancelled'
+    order.save()
+    return make_response(jsonify(order.serialize()), status.HTTP_200_OK)
+
 
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S

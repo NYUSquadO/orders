@@ -433,3 +433,15 @@ class TestOrderResourceServer(TestCase):
         resp = self.app.get("/orders/{}/items/{}".format(order.id, 0))
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_cancel_order(self):
+        """ Cancel an existing Order """
+        order = self._create_orders(1)[0]
+        resp = self.app.put('/orders/{}/cancel'.format(order.id), content_type='application/json')
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(data['status'], 'Cancelled')
+
+    def test_cancel_order_not_found(self):
+        """ Read an Item where order does not exist"""
+        resp = self.app.put("/orders/{}/cancel".format(0))
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
