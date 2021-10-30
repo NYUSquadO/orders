@@ -1,3 +1,4 @@
+
 language: python
 python:
   - "3.8"
@@ -15,8 +16,7 @@ before_script:
 install: "pip3 install -r requirements.txt"
 
 # command to run tests
-script:
-  - nosetests
+script: nosetests
 
 after_success:
  - codecov
