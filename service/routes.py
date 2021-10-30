@@ -207,21 +207,14 @@ def delete_item(order_id, item_id):
     app.logger.info("Request to delete an item in order %s with item_id: %s", order_id, item_id)
     order = Order.find(order_id)
     
-    if not order:
-        raise NotFound("Order with id '{}' was not found.".format(order_id))
-    item_found = False
-    for item in order.order_items:
-        if item.id == item_id:
-            item_found = True
-            item.delete()
-            order.save()
-            break
-    if not item_found:
-        raise NotFound("Item with id '{}' was not found.".format(item_id))
-    # item = order.order_items.find(item_id)
-    # if item:
-    #     item.delete()
-    #     order.save()
+    if order:
+        for item in order.order_items:
+            if item.id == item_id:
+                item_found = True
+                item.delete()
+                order.save()
+                break
+    
     app.logger.info("Item with ID [%s] in order %s is deleted.", item_id, order_id)
     
     return make_response("", status.HTTP_204_NO_CONTENT)
@@ -254,6 +247,22 @@ def read_item(order_id, item_id):
     app.logger.info("Returning Item with ID [%s] in order %s.", item_id, order_id)
 
     return make_response(jsonify(item_obj), status.HTTP_200_OK)
+
+######################################################################
+# CANCEL AN ORDER
+######################################################################
+@app.route('/orders/<int:order_id>/cancel', methods=['PUT'])
+def cancel_orders(order_id):
+    """
+    Cancel an Order
+    This endpoint will update an Order based the body that is posted
+    """
+    order = Order.find(order_id)
+    if not order:
+        raise NotFound("Order with id '{}' was not found.".format(order_id))
+    order.status = 'Cancelled'
+    order.save()
+    return make_response(jsonify(order.serialize()), status.HTTP_200_OK)
 
 
 ######################################################################
