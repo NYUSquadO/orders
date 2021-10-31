@@ -8,7 +8,7 @@ A collection of order items created from products and quantity
 from flask import jsonify, request, url_for, make_response, abort
 
 from werkzeug.exceptions import NotFound
-from service.models import Order
+from service.models import Order, OrderStatus
 from . import status  # HTTP Status Codes
 
 # For this example we'll use SQLAlchemy, a popular ORM that supports a
@@ -260,7 +260,7 @@ def cancel_orders(order_id):
     order = Order.find(order_id)
     if not order:
         raise NotFound("Order with id '{}' was not found.".format(order_id))
-    order.status = 'Cancelled'
+    order.status = OrderStatus.Cancelled
     order.save()
     return make_response(jsonify(order.serialize()), status.HTTP_200_OK)
 

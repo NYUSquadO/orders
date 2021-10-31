@@ -100,6 +100,8 @@ class TestOrder(unittest.TestCase):
 
     def test_serialize_order(self):
         """ Test serialization of Order """
+        logging.debug(self.order)
+
         data = self.order.serialize()
         self.assertNotEqual(data, None)
         self.assertIn("id", data)

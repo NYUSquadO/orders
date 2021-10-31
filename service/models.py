@@ -5,6 +5,7 @@ All of the models are stored in this module
 """
 import logging
 from flask_sqlalchemy import SQLAlchemy
+from enum import Enum
 
 logger = logging.getLogger("flask.app")
 
@@ -88,6 +89,12 @@ class OrderItem(db.Model):
         logger.info("Saving item in order :: %s", self.item_id)
         db.session.commit()
 
+class OrderStatus(Enum):
+    """ Enumeration of valid Order Status """
+    Placed = 0
+    Cancelled = 1
+    Default = 3
+
 class Order(db.Model):
     """
     Class that represents a Order
@@ -100,7 +107,7 @@ class Order(db.Model):
     cust_id  = db.Column(db.Integer)             #Customer ID for the order
     order_items = db.relationship('OrderItem', backref='order', lazy = True, \
         cascade = "all,delete") #Items in the order
-    status = db.Column(db.String(80)) # status of the order
+    status = db.Column(db.Enum(OrderStatus), nullable=False, server_default=(OrderStatus.Default.name)) # status of the order
 
     def __repr__(self):
         return "<Order id=[%s] placed by cust_id=[%s]>" % (self.id, self.cust_id)
@@ -133,7 +140,7 @@ class Order(db.Model):
             "id": self.id, 
             "cust_id": self.cust_id,
             "order_items": [order_item.serialize() for order_item in self.order_items],
-            "status": self.status
+            "status": self.status.name if self.status else None
             }
 
     def deserialize(self, data):
