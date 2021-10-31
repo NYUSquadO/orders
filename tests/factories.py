@@ -17,7 +17,7 @@ Test Factory to make fake objects for testing
 """
 import factory
 from factory.fuzzy import FuzzyChoice
-from service.models import OrderItem, Order
+from service.models import OrderItem, Order, OrderStatus
 
 class OrderItemFactory(factory.Factory):
     """Creates fake orderitems that you don't have to feed"""
@@ -44,4 +44,4 @@ class OrderFactory(factory.Factory):
     id = factory.Sequence(lambda n: n)
     cust_id = FuzzyChoice(choices = [101, 102, 103, 104])
     order_items = [OrderItemFactory()]
-    status = FuzzyChoice(choices = ["Cancelled", "Placed"])
+    status = FuzzyChoice(choices = [OrderStatus.Placed, OrderStatus.Default])

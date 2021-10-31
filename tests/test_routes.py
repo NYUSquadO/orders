@@ -9,7 +9,7 @@ import os
 import logging
 from unittest import TestCase
 from service import status  # HTTP Status Codes
-from service.models import db, init_db
+from service.models import OrderStatus, db, init_db
 from service.routes import app
 from .factories import OrderFactory, OrderItemFactory
 
@@ -439,7 +439,7 @@ class TestOrderResourceServer(TestCase):
         resp = self.app.put('/orders/{}/cancel'.format(order.id), content_type='application/json')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
-        self.assertEqual(data['status'], 'Cancelled')
+        self.assertEqual(data["status"], OrderStatus.Cancelled.name)
 
     def test_cancel_order_not_found(self):
         """ Read an Item where order does not exist"""
