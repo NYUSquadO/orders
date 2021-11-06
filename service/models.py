@@ -201,3 +201,9 @@ class Order(db.Model):
         """ Find a Order by it's id """
         logger.info("Processing lookup or 404 for order id %s ...", by_id)
         return cls.query.get_or_404(by_id)
+
+    @classmethod
+    def find_by_customer(cls, customer_id) :
+        """Returns all orders for the specified customer ID"""
+        logger.info("Finding all orders for the specified customer ID %s", customer_id)
+        return cls.query.filter(cls.cust_id == customer_id)

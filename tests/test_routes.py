@@ -8,6 +8,8 @@ Test cases can be run with the following:
 import os
 import logging
 from unittest import TestCase
+from urllib.parse import quote_plus
+
 from service import status  # HTTP Status Codes
 from service.models import OrderStatus, db, init_db
 from service.routes import app
@@ -445,3 +447,21 @@ class TestOrderResourceServer(TestCase):
         """ Read an Item where order does not exist"""
         resp = self.app.put("/orders/{}/cancel".format(0))
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_query_by_customer_id(self):
+        """Query by customer ID"""
+        orders = self._create_orders(5)
+
+        query_customer_id = orders[0].cust_id
+
+        customer_id_orders = [order for order in orders if order.cust_id == query_customer_id]
+
+        resp = self.app.get(BASE_URL, query_string = "cust_id={}".format(query_customer_id))
+
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), len(customer_id_orders))
+
+        # checking data to confirm
+        for order in data:
+            self.assertEqual(order["cust_id"], query_customer_id)
