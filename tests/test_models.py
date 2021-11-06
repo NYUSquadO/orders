@@ -197,3 +197,29 @@ class TestOrder(unittest.TestCase):
         self.assertEqual(order_result.order_items[0].item_name, order_2.order_items[0].item_name)
         self.assertEqual(order_result.order_items[0].item_qty, order_2.order_items[0].item_qty)
         self.assertEqual(order_result.order_items[0].item_price, order_2.order_items[0].item_price)
+
+    def test_find_by_customer_id(self):
+        """Find by customer ID"""
+        Order(cust_id = 1000, order_items = [OrderItem(order_id = 1, item_id = 678, \
+            item_name = "IPHONE 13 PRO", \
+            item_qty = 1, item_price = 1500)]).create()
+
+        Order(cust_id = 1001, order_items = [OrderItem(order_id = 1, item_id = 543, \
+            item_name = "SAMSUNG GALAXY TAB", \
+            item_qty = 2, item_price = 1500)]).create()
+
+        Order(cust_id = 1000, order_items = [OrderItem(order_id = 1, item_id = 789, \
+            item_name = "X1 Extreme Thinkpad", \
+            item_qty = 1, item_price = 1500)]).create()
+
+        query_customer_id = 1000
+        self.assertEqual(Order.find_by_customer(query_customer_id).count(), 2)
+        self.assertEqual(Order.find_by_customer(query_customer_id)[0].cust_id, query_customer_id)
+        self.assertEqual(Order.find_by_customer(query_customer_id)[1].cust_id, query_customer_id)
+
+        self.assertEqual(Order.find_by_customer(999).count(), 0)
+
+
+
+
+        
