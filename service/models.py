@@ -89,6 +89,17 @@ class OrderItem(db.Model):
         logger.info("Saving item in order :: %s", self.item_id)
         db.session.commit()
 
+    @classmethod
+    def all(cls):
+        """ Returns all of the Orders in the database """
+        logger.info("Processing all OrderItems")
+        return cls.query.all()
+
+    @classmethod
+    def find_by_item(cls,item_id):
+        """Returns all orders containing the specified item id"""
+        return cls.query.filter(cls.item_id==item_id)
+
 class OrderStatus(Enum):
     """ Enumeration of valid Order Status """
     Placed = 0
@@ -207,3 +218,14 @@ class Order(db.Model):
         """Returns all orders for the specified customer ID"""
         logger.info("Finding all orders for the specified customer ID %s", customer_id)
         return cls.query.filter(cls.cust_id == customer_id)
+
+    @classmethod
+    def find_by_item(cls, item_id):
+        """Returns all orders for the specified customer ID"""
+        logger.info("Finding all orders for the specified item ID %s", item_id)
+        return cls.query.join(
+            OrderItem
+        ).filter(Order.id==OrderItem.order_id).filter(OrderItem.item_id==item_id).all()
+
+
+

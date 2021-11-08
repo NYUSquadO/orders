@@ -129,9 +129,13 @@ def list_orders():
     """Returns all of the Orders"""
     app.logger.info("Request for order list")
     orders = []
-    customer_id = request.args.get("cust_id")
+    customer_id = request.args.get("cust_id",None)
+    item_id = request.args.get("item_id",None)
+
     if customer_id:
         orders = Order.find_by_customer(customer_id)
+    elif item_id:
+        orders = Order.find_by_item(item_id)
     else:
         orders = Order.all()
     results = [order.serialize() for order in orders]
@@ -267,6 +271,8 @@ def cancel_orders(order_id):
     order.status = OrderStatus.Cancelled
     order.save()
     return make_response(jsonify(order.serialize()), status.HTTP_200_OK)
+
+
 
 
 ######################################################################
