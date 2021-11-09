@@ -68,6 +68,21 @@ class TestOrderResourceServer(TestCase):
             orders.append(test_order)
         return orders
 
+    def _create_orders_items(self, count):
+        """Factory method to create orders with items in bulk"""
+        orders = []
+        for _ in range(count):
+            test_order = OrderFactory()
+            resp = self.app.post(
+                BASE_URL, json=test_order.serialize(), content_type=CONTENT_TYPE_JSON
+            )
+            self.assertEqual(
+                resp.status_code, status.HTTP_201_CREATED, "Could not create test order"
+            )
+            new_order = resp.get_json()
+            test_order.id = new_order["id"]
+            orders.append(new_order)
+        return orders
 
     ######################################################################
     #  P L A C E   T E S T   C A S E S   H E R E
@@ -468,28 +483,15 @@ class TestOrderResourceServer(TestCase):
 
     def test_query_by_item_id(self):
         """Query by Item ID"""
-        orders = self._create_orders(5)
-    
-        query_item_id = None
-        for order in orders:
-            test_order_item = OrderItemFactory()
-            test_order_item.order_id = order.id
-            order.order_items.append(test_order_item)
-            query_item_id = test_order_item.item_id
-            #print(f"order={order.id}, items={order.order_items[0]}, query_item_id={query_item_id}")
+        orders = self._create_orders_items(5)
 
-        item_id_orders = [order for order in orders for item in order.order_items if item.item_id == query_item_id]
+        query_item_id = orders[0].get("order_items")[0].get("item_id")
+        item_id_orders = [order for order in orders for item in order["order_items"] if item["item_id"] == query_item_id]
 
         resp = self.app.get(BASE_URL, query_string = "item_id={}".format(query_item_id))
 
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
-        #print(f"data={data}")
-        self.assertEqual(len(data), len(item_id_orders))
 
-        # checking data to confirm
-        for order in data:
-            item_ids = []
-            for item in order.order_items:
-                item_ids.append(item["item_id"])
-            self.assertIn(query_item_id, item_ids)
+        # assert equal length of orders
+        self.assertEqual(len(data), len(item_id_orders))

@@ -221,7 +221,7 @@ class Order(db.Model):
 
     @classmethod
     def find_by_item(cls, item_id):
-        """Returns all orders for the specified customer ID"""
+        """Returns all orders for the specified item ID"""
         logger.info("Finding all orders for the specified item ID %s", item_id)
         return cls.query.join(
             OrderItem
