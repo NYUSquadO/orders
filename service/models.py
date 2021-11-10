@@ -160,8 +160,7 @@ class Order(db.Model):
             order_items = data["order_items"]
 
             for order_item in order_items:
-                self.order_items.append(OrderItem(order_id = order_item['order_id'], \
-                    item_id = order_item['item_id'] , \
+                self.order_items.append(OrderItem(item_id = order_item['item_id'] , \
                     item_name = order_item['item_name'] , item_qty = order_item['item_qty'], \
                     item_price = order_item['item_price'] ))
 
