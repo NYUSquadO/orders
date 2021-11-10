@@ -7,6 +7,7 @@ Test cases can be run with the following:
 """
 import os
 import logging
+import config
 from unittest import TestCase
 from urllib.parse import quote_plus
 
@@ -15,9 +16,7 @@ from service.models import OrderStatus, db, init_db
 from service.routes import app
 from .factories import OrderFactory, OrderItemFactory
 
-DATABASE_URI = os.getenv(
-    "DATABASE_URI", "postgres://postgres:postgres@localhost:5432/postgres"
-)
+DATABASE_URI = config.DATABASE_URI
 BASE_URL = "/orders"
 CONTENT_TYPE_JSON = "application/json"
 

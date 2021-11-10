@@ -5,12 +5,11 @@ Test cases for Order Model
 import logging
 import unittest
 import os
+import config
 from service.models import Order, OrderItem, DataValidationError, db
 from service import app
 
-DATABASE_URI = os.getenv(
-    "DATABASE_URI", "postgres://postgres:postgres@localhost:5432/postgres"
-)
+DATABASE_URI = config.DATABASE_URI
 
 ######################################################################
 #  O R D E R   M O D E L   T E S T   C A S E S

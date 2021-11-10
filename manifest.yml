@@ -6,13 +6,13 @@ applications:
   instances: 2
   memory: 128M
   routes: 
-  - route: nyu-order-service-fall2101.us-south.cf.a
+  - route: nyu-order-service-fall2101.us-south.cf.appdomain.cloud
   disk_quota: 2048M
   buildpacks: 
   - python_buildpack
   timeout: 180
   services:
-  - Cloudant
+  - ElephantSQL
   env:
     FLASK_APP : service:app
     FLASK_DEBUG : false
