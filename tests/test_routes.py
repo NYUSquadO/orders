@@ -72,9 +72,9 @@ class TestOrderResourceServer(TestCase):
             for i, item in enumerate(order_items):
                 test_order.order_items[i].item_id = item["item_id"]
             orders.append(test_order)
-        print(f'orders :: {orders}, count :: {count}')
-        for order in orders:
-            print(order.order_items)
+        #print(f'orders :: {orders}, count :: {count}')
+        #for order in orders:
+        #    print(order.order_items)
         return orders
 
     def _create_orders_items(self, count):
