@@ -101,3 +101,9 @@ $ vagrant destroy
 | read_item    | GET    |  /orders/\<int:order_id>/items/\<int:item_id>       |   Retrieve a single Order Item
 | update_order_item | PUT     | /orders/\<int:order_id>/items/\<int:item_id>      |   Update an Order Item based on the body that is posted
 | delete_item   |   DELETE | /orders/\<int:order_id>/items/\<int:item_id>   |    Delete item in order based on the item id and order id specified in the path
+| list_orders   |   GET  | /orders?cust_id=<customer_id>   |    Query for orders by customer ID
+| list_orders   |   GET  | /orders?item_id=<item_id>   |    Query for orders by item ID
+| cancel_orders   |  PUT  | /orders/<int:order_id>/cancel   |  Cancel Order
+
+##IBM Cloud Foundry URL
+https://nyu-order-service-fall2101.us-south.cf.appdomain.cloud/
