@@ -77,21 +77,6 @@ class TestOrderResourceServer(TestCase):
         #    print(order.order_items)
         return orders
 
-    def _create_orders_items(self, count):
-        """Factory method to create orders with items in bulk"""
-        orders = []
-        for _ in range(count):
-            test_order = OrderFactory()
-            resp = self.app.post(
-                BASE_URL, json=test_order.serialize(), content_type=CONTENT_TYPE_JSON
-            )
-            self.assertEqual(
-                resp.status_code, status.HTTP_201_CREATED, "Could not create test order"
-            )
-            new_order = resp.get_json()
-            test_order.id = new_order["id"]
-            orders.append(new_order)
-        return orders
 
     ######################################################################
     #  P L A C E   T E S T   C A S E S   H E R E
