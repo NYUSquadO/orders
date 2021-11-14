@@ -34,6 +34,7 @@ jobs:
             - chromium-chromedriver
             - python3-selenium
       before_script:
+        - psql -c 'create database test;' -U postgres
         # Update the chromedriver to the latest version, otherwise it would not be compatible with Chrome v92
         - LATEST_CHROMEDRIVER_VERSION=`curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE"`
         - curl "https://chromedriver.storage.googleapis.com/${LATEST_CHROMEDRIVER_VERSION}/chromedriver_linux64.zip" -O
