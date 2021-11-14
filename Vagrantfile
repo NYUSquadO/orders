@@ -10,7 +10,7 @@ Vagrant.configure(2) do |config|
   # boxes at https://atlas.hashicorp.com/search.
   config.vm.box = "ubuntu/focal64"
   #config.vm.box = "bento/ubuntu-21.04"
-  config.vm.hostname = "ubuntu"
+  config.vm.hostname = "debian"
 
   # accessing "localhost:8080" will access port 80 on the guest machine.
   # config.vm.network "forwarded_port", guest: 80, host: 8080
@@ -84,11 +84,15 @@ Vagrant.configure(2) do |config|
     echo "****************************************"
     # Install Python 3 and dev tools 
     apt-get update
-    apt-get install -y git vim tree python3 python3-pip python3-venv
+    apt-get install -y git vim tree python3 python3-pip python3-venv python3-selenium
     apt-get -y autoremove
     
     # Need PostgreSQL development library to compile on arm64
     apt-get install -y libpq-dev
+
+    # Install Chromium Driver
+    apt-get install -y chromium-driver
+    chromedriver --version
 
     # Create a Python3 Virtual Environment and Activate it in .profile
     sudo -H -u vagrant sh -c 'python3 -m venv ~/venv'
