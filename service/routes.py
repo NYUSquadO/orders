@@ -20,19 +20,29 @@ from service.models import Order, OrderItem
 from . import app
 
 ######################################################################
+# GET HEALTH CHECK
+######################################################################
+@app.route("/healthcheck")
+def healthcheck():
+    """Let them know our heart is still beating"""
+    return make_response(jsonify(status=200, message="Healthy"), status.HTTP_200_OK)
+
+
+######################################################################
 # GET INDEX
 ######################################################################
 @app.route("/")
 def index():
     """ Root URL response """
-    return (
-        jsonify(
-            name="Orders REST API Service",
-            version="1.0",
-            paths=url_for("list_orders", _external=True),
-        ),
-        status.HTTP_200_OK,
-    )
+    # return (
+    #     jsonify(
+    #         name="Orders REST API Service",
+    #         version="1.0",
+    #         paths=url_for("list_orders", _external=True),
+    #     ),
+    #     status.HTTP_200_OK,
+    # )
+    return app.send_static_file("index.html")
 
 ######################################################################
 # CREATE ORDER

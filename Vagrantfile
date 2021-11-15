@@ -42,7 +42,7 @@ Vagrant.configure(2) do |config|
   ############################################################
   config.vm.provider :docker do |docker, override|
     override.vm.box = nil
-    docker.image = "rofrano/vagrant-provider:ubuntu"
+    docker.image = "rofrano/vagrant-provider:debian"
     docker.remains_running = true
     docker.has_ssh = true
     docker.privileged = true
@@ -91,7 +91,8 @@ Vagrant.configure(2) do |config|
     apt-get install -y libpq-dev
 
     # Install Chromium Driver
-    apt-get install -y chromium-driver
+    apt-get install chromium-browser
+    apt-get install chromium-driver
     chromedriver --version
 
     # Create a Python3 Virtual Environment and Activate it in .profile
