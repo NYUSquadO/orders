@@ -11,7 +11,7 @@ Background:
         |  3 | 14      | Default    | 3        | 71         | iPhone      | 1        | 849.99       |
         |  4 | 15      | Placed     | 4        | 72         | iPad        | 1        | 1099.50      |
 
-Scenario: The server is running
-    When I visit the "Home Page"
-    Then I should see "Order RESTful Service" in the title
-    And I should not see "404 Not Found"
+# Scenario: The server is running
+#     When I visit the "Home Page"
+#     Then I should see "Order RESTful Service" in the title
+#     And I should not see "404 Not Found"
