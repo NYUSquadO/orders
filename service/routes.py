@@ -1,6 +1,10 @@
 """
 Order Service
 
+Paths:
+------
+GET / - Displays a UI for Selenium testing
+
 # TODO: Describe what service does here
 A collection of order items created from products and quantity
 """

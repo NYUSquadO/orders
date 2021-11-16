@@ -85,9 +85,7 @@ class TestOrderResourceServer(TestCase):
         """ Test index call """
         resp = self.app.get("/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        data = resp.get_json()
-        self.assertEqual(data["name"], "Orders REST API Service")
-        self.assertIn("/orders",data["paths"])
+        self.assertIn(b"Order REST API Service", resp.data)
 
     def test_create_order(self):
         """Create Order"""
