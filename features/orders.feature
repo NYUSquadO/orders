@@ -18,6 +18,6 @@ Scenario: The server is running
 
 Scenario: Delete an Order
     When I visit the "Home Page"
-    When I set the "order_id" to "1"
+    And I set the "order_id" to "1"
     And I press the "Delete" button
     Then I should see the message "Order has been Deleted!"
