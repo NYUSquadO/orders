@@ -12,7 +12,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions
 
 WAIT_SECONDS = 120
-#BASE_URL = getenv('BASE_URL', 'http://localhost:5000/')
+#BASE_URL = getenv('BASE_URL', 'http://localhost:5000')
 
 @when('I visit the "home page"')
 def step_impl(context):

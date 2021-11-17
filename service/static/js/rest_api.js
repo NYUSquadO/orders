@@ -24,6 +24,34 @@ $(function () {
         $("#flash_message").append(message);
     }
 
+    // ****************************************
+    // Retrieve a Pet
+    // ****************************************
+
+    $("#retrieve-btn").click(function () {
+
+        var id = $("#id").val();
+
+        var ajax = $.ajax({
+            type: "GET",
+            url: "/orders/" + id,
+            contentType: "application/json",
+            data: ''
+        })
+
+        ajax.done(function(res){
+            //alert(res.toSource())
+            update_form_data(res)
+            flash_message("Success")
+        });
+
+        ajax.fail(function(res){
+            clear_form_data()
+            flash_message(res.responseJSON.message)
+        });
+
+    });
+
 
     // ****************************************
     // Create an order
@@ -32,24 +60,27 @@ $(function () {
     $("#create-btn").click(function () {
 
         var cust_id =  $("#cust_id").val();
-        var status = $("#status").val();
+        // var status = $("#status").val();
         var item_id = $("#item_id").val();
         var item_name = $("#item_name").val()
         var item_qty = $("#item_qty").val()
         var item_price = $("#item_price").val()
 
 
+        var item =  {
+            "item_id": item_id,
+            "item_name": item_name,
+            "item_qty": item_qty,
+            "item_price": item_price
+        }
+
+        var item_list = new Array();
+        item_list[0] = item;
+
         var data = {
             "cust_id": cust_id,
-            "status": status,
-            order_items: [
-                {
-                    "item_id": item_id,
-                    "item_name": item_name,
-                    "item_qty": item_qty,
-                    "item_price": item_price
-                }
-            ]
+            // "status": status,
+            "order_items": item_list
         };
 
         var ajax = $.ajax({
