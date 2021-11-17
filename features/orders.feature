@@ -15,3 +15,9 @@ Scenario: The server is running
     When I visit the "Home Page"
     Then I should see "Order RESTful Service" in the title
     And I should not see "404 Not Found"
+
+Scenario: Delete an Order
+    When I visit the "Home Page"
+    And I set the "order_id" to "1"
+    And I press the "Delete" button
+    Then I should see the message "Order has been Deleted!"
