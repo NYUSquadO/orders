@@ -24,4 +24,49 @@ $(function () {
         $("#flash_message").append(message);
     }
 
+
+    // ****************************************
+    // Create an order
+    // ****************************************
+
+    $("#create-btn").click(function () {
+
+        var cust_id =  $("#cust_id").val();
+        var status = $("#status").val();
+        var item_id = $("#item_id").val();
+        var item_name = $("#item_name").val()
+        var item_qty = $("#item_qty").val()
+        var item_price = $("#item_price").val()
+
+
+        var data = {
+            "cust_id": cust_id,
+            "status": status,
+            order_items: [
+                {
+                    "item_id": item_id,
+                    "item_name": item_name,
+                    "item_qty": item_qty,
+                    "item_price": item_price
+                }
+            ]
+        };
+
+        var ajax = $.ajax({
+            type: "POST",
+            url: "/orders",
+            contentType: "application/json",
+            data: JSON.stringify(data),
+        });
+
+        ajax.done(function(res){
+            update_form_data(res)
+            flash_message("Success")
+        });
+
+        ajax.fail(function(res){
+            flash_message(res.responseJSON.message)
+        });
+    });
+
 })
