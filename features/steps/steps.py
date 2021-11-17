@@ -34,6 +34,7 @@ def step_impl(context, message):
     error_msg = "I should not see '%s' in '%s'" % (message, context.resp.text)
     ensure(message in context.resp.text, False, error_msg)
 
+
 @given('the following orders')
 def step_impl(context):
 	""" Delete all Orders and load new ones """
@@ -45,7 +46,7 @@ def step_impl(context):
 		context.resp = requests.delete(context.base_url + '/orders/' + str(order["id"]), headers=headers)
 		expect(context.resp.status_code).to_equal(204)
 
-	# load the database with new pets
+	# load the database with new orders
 	create_url = context.base_url + '/orders'
 	for row in context.table:
 		
@@ -75,6 +76,7 @@ def step_impl(context, element_name, text_string):
     element.clear()
     element.send_keys(text_string)
 
+
 @then('I should see the message "{message}"')
 def step_impl(context, message):
     found = WebDriverWait(context.driver, context.WAIT_SECONDS).until(
@@ -84,6 +86,7 @@ def step_impl(context, message):
         )
     )
     expect(found).to_be(True)
+
 
 @then('the "{element_name}" field should be empty')
 def step_impl(context, element_name):
@@ -130,6 +133,7 @@ def step_impl(context, button):
     )
     element.click()
 
+
 @then('I should see "{text_string}" in the "{element_name}" field')
 def step_impl(context, text_string, element_name):
     element_id = element_name.lower()
@@ -140,3 +144,7 @@ def step_impl(context, text_string, element_name):
         )
     )
     expect(found).to_be(True)
+
+
+
+

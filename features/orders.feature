@@ -39,3 +39,9 @@ Scenario: Create an Order
     And I should see "cups" in the "item_name"
     And I should see "5" in the "item_qty"
     And I should see "5.50" in the "item_price"
+    
+Scenario: Delete an Order
+    When I visit the "Home Page"
+    And I set the "order_id" to "1"
+    And I press the "Delete" button
+    Then I should see the message "Order has been Deleted!"

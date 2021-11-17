@@ -99,5 +99,26 @@ $(function () {
             flash_message(res.responseJSON.message)
         });
     });
+    
+    // Delete an Order
+    $("#delete-btn").click(function () {
 
+        var order_id = $("#order_id").val();
+
+        var ajax = $.ajax({
+            type: "DELETE",
+            url: "/orders/" + order_id,
+            contentType: "application/json",
+            data: '',
+        })
+
+        ajax.done(function(res){
+            clear_form_data()
+            flash_message("Order has been Deleted!")
+        });
+
+        ajax.fail(function(res){
+            flash_message("No orders found!")
+        });
+    });
 })
