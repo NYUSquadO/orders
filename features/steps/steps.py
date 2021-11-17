@@ -66,3 +66,32 @@ def step_impl(context):
 		context.resp = requests.post(create_url, data=payload, headers=headers)
 		expect(context.resp.status_code).to_equal(201)
 		#print(context.resp.status_code)
+
+@when('I set the "{element_name}" to "{text_string}"')
+def step_impl(context, element_name, text_string):
+    element_id = element_name.lower()
+    element = context.driver.find_element_by_id(element_id)
+    element.clear()
+    element.send_keys(text_string)
+
+@when('I press the "{button}" button')
+def step_impl(context, button):
+    button_id = button.lower() + '-btn'
+
+    element = WebDriverWait(context.driver, context.WAIT_SECONDS).until(
+        expected_conditions.element_to_be_clickable(
+            (By.ID, button_id)
+        )
+    )
+    element.click()
+
+@then('I should see the message "{message}"')
+def step_impl(context, message):
+    found = WebDriverWait(context.driver, context.WAIT_SECONDS).until(
+        expected_conditions.text_to_be_present_in_element(
+            (By.ID, 'flash_message'),
+            message
+        )
+    )
+    expect(found).to_be(True)
+
