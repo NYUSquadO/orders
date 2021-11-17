@@ -25,7 +25,7 @@ $(function () {
     }
 
     // ****************************************
-    // Retrieve a Pet
+    // Retrieve an Order
     // ****************************************
 
     $("#retrieve-btn").click(function () {
@@ -60,7 +60,6 @@ $(function () {
     $("#create-btn").click(function () {
 
         var cust_id =  $("#cust_id").val();
-        // var status = $("#status").val();
         var item_id = $("#item_id").val();
         var item_name = $("#item_name").val()
         var item_qty = $("#item_qty").val()
@@ -79,7 +78,6 @@ $(function () {
 
         var data = {
             "cust_id": cust_id,
-            // "status": status,
             "order_items": item_list
         };
 
