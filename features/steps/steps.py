@@ -5,6 +5,7 @@ Steps file for orders.feature
 from os import getenv
 import json
 import requests
+import logging
 from behave import *
 from compare import expect, ensure
 from selenium.webdriver.common.by import By
