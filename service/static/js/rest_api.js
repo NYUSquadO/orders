@@ -30,7 +30,7 @@ $(function () {
 
     $("#retrieve-btn").click(function () {
 
-        var id = $("#id").val();
+        var id = $("#order_id").val();
 
         var ajax = $.ajax({
             type: "GET",
@@ -60,26 +60,23 @@ $(function () {
     $("#create-btn").click(function () {
 
         var cust_id =  $("#cust_id").val();
-        var item_id = $("#item_id").val();
-        var item_name = $("#item_name").val()
-        var item_qty = $("#item_qty").val()
-        var item_price = $("#item_price").val()
-
-
-        var item =  {
-            "item_id": item_id,
-            "item_name": item_name,
-            "item_qty": item_qty,
-            "item_price": item_price
-        }
-
-        var item_list = new Array();
-        item_list[0] = item;
 
         var data = {
             "cust_id": cust_id,
-            "order_items": item_list
+            "order_items":[]
         };
+
+        var item_id = $("#item_id").val();
+        var item_name = $("#item_name").val();
+        var item_qty = $("#item_qty").val();
+        var item_price = $("#item_price").val();
+
+        var item = {};
+        item["item_id"] = item_id;
+        item["item_name"] = item_name;
+        item["item_qty"] = item_qty;
+        item["item_price"] = item_price;
+        data["order_items"].push(item);
 
         var ajax = $.ajax({
             type: "POST",
@@ -119,4 +116,13 @@ $(function () {
             flash_message("No orders found!")
         });
     });
+
+    // ****************************************
+    // Clear the form
+    // ****************************************
+    $("#clear-btn").click(function () {
+        $("#order_id").val("");
+        clear_form_data()
+    });
+
 })

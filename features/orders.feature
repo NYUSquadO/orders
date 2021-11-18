@@ -26,15 +26,15 @@ Scenario: Create an Order
     And I set the "item_price" to "5.50"
     And I press the "Create" button
     Then I should see the message "Success"
-    When I copy the "id" field
-    And I press the "Clear" button
-    Then the "id" field should be empty
-    When I paste the "id" field
-    And I press the "Retrieve" button
-    And I should see "7" in the "item_id" field
-    And I should see "cups" in the "item_name"
-    And I should see "5" in the "item_qty"
-    And I should see "5.50" in the "item_price"
+    # When I copy the "id" field
+    # And I press the "Clear" button
+    # Then the "id" field should be empty
+    # When I paste the "id" field
+    # And I press the "Retrieve" button
+    # And I should see "7" in the "item_id" field
+    # And I should see "cups" in the "item_name"
+    # And I should see "5" in the "item_qty"
+    # And I should see "5.50" in the "item_price"
     
 Scenario: Delete an Order
     When I visit the "Home Page"
