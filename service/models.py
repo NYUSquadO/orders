@@ -162,14 +162,8 @@ class Order(db.Model):
             data (dict): A dictionary containing the order data
         """
         try:    
-            if isinstance(data["cust_id"], int):
-                self.cust_id = data["cust_id"]
-            else:
-                raise DataValidationError("Invalid type for int [cust_id]: " \
-                    + type(data["cust_id"]))
-
+            self.cust_id = int(data["cust_id"])
             order_items = data["order_items"]
-
             for order_item in order_items:
                 self.order_items.append(OrderItem(item_id = order_item['item_id'] , \
                     item_name = order_item['item_name'] , item_qty = order_item['item_qty'], \
@@ -181,7 +175,12 @@ class Order(db.Model):
             )
         except TypeError as error:
             raise DataValidationError(
-                "Invalid Order: body of request contained bad or no data" + error.args[0])
+                "Invalid Order: body of request contained bad or no data: " + error.args[0])
+        except  ValueError as error:
+                raise DataValidationError(
+                "Invalid Order: cust_id must be int " + error.args[0]
+            )
+
         return self
 
     @classmethod
