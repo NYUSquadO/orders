@@ -36,6 +36,26 @@ Scenario: Create an Order
     And I should see "5" in the "item_qty" field
     And I should see "5.50" in the "item_price" field
     
+Scenario: Retrieve an Order
+    When I visit the "Home Page"    
+    And I set the "cust_id" to "100"
+    And I set the "item_id" to "1"
+    And I set the "item_name" to "IPad"
+    And I set the "item_qty" to "1"
+    And I set the "item_price" to "999"
+    And I press the "Create" button
+    Then I should see the message "Success"
+    When I copy the "Order_id" field
+    And I press the "Clear" button
+    Then the "Order_id" field should be empty
+    When I paste the "Order_id" field
+    And I press the "Retrieve" button
+    Then I should see "100" in the "cust_id" field
+    And I should see "1" in the "item_id" field
+    And I should see "IPad" in the "item_name" field
+    And I should see "1" in the "item_qty" field
+    And I should see "999" in the "item_price" field
+
 Scenario: Delete an Order
     When I visit the "Home Page"
     And I set the "order_id" to "1"
