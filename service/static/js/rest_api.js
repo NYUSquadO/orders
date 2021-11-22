@@ -49,6 +49,7 @@ $(function () {
         item["item_price"] = item_price;
         data["order_items"].push(item);
 
+
         var ajax = $.ajax({
             type: "POST",
             url: "/orders",
@@ -116,6 +117,35 @@ $(function () {
             flash_message("No orders found!")
         });
     });
+
+     // Cancel an Order
+    $("#cancel-btn").click(function () {
+
+        var order_id = $("#order_id").val().trim();
+
+        if (order_id == "" || order_id == "undefined")
+        {
+            flash_message("Please enter order id")
+            return
+        }
+
+        var ajax = $.ajax({
+            type: "PUT",
+            url: "/orders/" + order_id + "/cancel",
+            contentType: "application/json",
+            data: '',
+        })
+
+        ajax.done(function(res){
+            clear_form_data()
+            flash_message("Order has been Cancelled!")
+        });
+
+        ajax.fail(function(res){
+            flash_message("No orders found!")
+        });
+    });
+
 
     // ****************************************
     // Clear the form

@@ -61,3 +61,25 @@ Scenario: Delete an Order
     And I set the "order_id" to "1"
     And I press the "Delete" button
     Then I should see the message "Order has been Deleted!"
+
+Scenario: Order Id not found in Cancel an Order
+    When I visit the "Home Page"
+    And I set the "Order_id" to "100"
+    And I press the "Cancel" button
+    Then I should see the message "No orders found!"
+
+Scenario: Cancel an Order
+    When I visit the "Home Page"
+    And I set the "cust_id" to "100"
+    And I set the "item_id" to "1"
+    And I set the "item_name" to "IPad"
+    And I set the "item_qty" to "1"
+    And I set the "item_price" to "999"
+    And I press the "Create" button
+    Then I should see the message "Success"
+    When I copy the "Order_id" field
+    And I press the "Cancel" button
+    Then I should see the message "Order has been Cancelled!"
+
+
+
