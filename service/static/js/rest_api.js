@@ -25,35 +25,6 @@ $(function () {
     }
 
     // ****************************************
-    // Retrieve an Order
-    // ****************************************
-
-    $("#retrieve-btn").click(function () {
-
-        var id = $("#order_id").val();
-
-        var ajax = $.ajax({
-            type: "GET",
-            url: "/orders/" + id,
-            contentType: "application/json",
-            data: ''
-        })
-
-        ajax.done(function(res){
-            //alert(res.toSource())
-            update_form_data(res)
-            flash_message("Success")
-        });
-
-        ajax.fail(function(res){
-            clear_form_data()
-            flash_message(res.responseJSON.message)
-        });
-
-    });
-
-
-    // ****************************************
     // Create an order
     // ****************************************
 
@@ -95,6 +66,35 @@ $(function () {
         });
     });
     
+    // ****************************************
+    // Retrieve an Order
+    // ****************************************
+
+    $("#retrieve-btn").click(function () {
+
+        var order_id = $("#order_id").val();
+
+        var ajax = $.ajax({
+            type: "GET",
+            url: "/orders/" + order_id,
+            contentType: "application/json",
+            data: ''
+        })
+
+        ajax.done(function(res){
+            //alert(res.toSource())
+            update_form_data(res)
+            flash_message(`Success. Order:${order_id} retrieved.`)
+        });
+
+        ajax.fail(function(res){
+            clear_form_data()
+            flash_message(res.responseJSON.message)
+        });
+
+    });
+
+
     // Delete an Order
     $("#delete-btn").click(function () {
 
