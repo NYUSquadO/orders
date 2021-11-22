@@ -125,7 +125,6 @@ $(function () {
 
         if (order_id == "" || order_id == "undefined")
         {
-            alert(order_id)
             flash_message("Please enter order id")
             return
         }
