@@ -41,3 +41,10 @@ Scenario: Delete an Order
     And I set the "order_id" to "1"
     And I press the "Delete" button
     Then I should see the message "Order has been Deleted!"
+
+Scenario: Cancel an Order
+    When I visit the "Home Page"
+    And I set the "order_id" to "1"
+    And I press the "Cancel" button
+    Then I should see the message "Order has been Cancelled!"
+
