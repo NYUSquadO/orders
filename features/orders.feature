@@ -82,4 +82,32 @@ Scenario: Cancel an Order
     Then I should see the message "Order has been Cancelled!"
 
 
+Scenario: Update an Order
+    When I visit the "Home Page"    
+    And I set the "cust_id" to "100"
+    And I set the "item_id" to "1000"
+    And I set the "item_name" to "Apple"
+    And I set the "item_qty" to "10"
+    And I set the "item_price" to "5"
+    And I press the "Create" button
+    Then I should see the message "Success"
+    When I copy the "Order_id" field
+    And I press the "Clear" button
+    Then the "Order_id" field should be empty
+    When I paste the "Order_id" field
+    And I press the "Retrieve" button
+    Then I should see "100" in the "cust_id" field
+    And I should see "1000" in the "item_id" field
+    And I should see "Apple" in the "item_name" field
+    And I should see "10" in the "item_qty" field
+    And I should see "5" in the "item_price" field
+    When I set the "cust_id" to "200"
+    And I press the "Update" button
+    Then I should see the message "Success"
+    When I copy the "Order_id" field
+    And I press the "Clear" button
+    Then the "Order_id" field should be empty
+    When I paste the "Order_id" field
+    And I press the "Retrieve" button
+    Then I should see "200" in the "cust_id" field
 
