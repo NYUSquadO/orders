@@ -9,6 +9,10 @@ $(function () {
         $("#order_id").val(res.id);
         $("#cust_id").val(res.cust_id);
         $("#status").val(res.status);
+        $("#item_id").val(res.order_items[0].item_id);
+        $("#item_name").val(res.order_items[0].item_name);
+        $("#item_qty").val(res.order_items[0].item_qty);
+        $("#item_price").val(res.order_items[0].item_price);
     }
 
     /// Clears all form fields
@@ -16,6 +20,10 @@ $(function () {
         $("#order_id").val("");
         $("#cust_id").val("");
         $("#status").val("");
+        $("#item_id").val("");
+        $("#item_name").val("");
+        $("#item_qty").val("");
+        $("#item_price").val("");
     }
 
     // Updates the flash message area

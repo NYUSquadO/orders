@@ -23,7 +23,7 @@ Scenario: Create an Order
     And I set the "item_id" to "7"
     And I set the "item_name" to "cups"
     And I set the "item_qty" to "5"
-    And I set the "item_price" to "5.50"
+    And I set the "item_price" to "5.5"
     And I press the "Create" button
     Then I should see the message "Success"
     When I copy the "Order_id" field
@@ -34,7 +34,7 @@ Scenario: Create an Order
     Then I should see "7" in the "item_id" field
     And I should see "cups" in the "item_name" field
     And I should see "5" in the "item_qty" field
-    And I should see "5.50" in the "item_price" field
+    And I should see "5.5" in the "item_price" field
     
 Scenario: Retrieve an Order
     When I visit the "Home Page"    
