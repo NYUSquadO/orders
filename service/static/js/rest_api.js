@@ -33,49 +33,6 @@ $(function () {
     }
 
     // ****************************************
-    // Create an order
-    // ****************************************
-
-    $("#create-btn").click(function () {
-
-        var cust_id =  $("#cust_id").val() + "";
-
-        var data = {
-            "cust_id": cust_id,
-            "order_items":[]
-        };
-
-        var item_id = $("#item_id").val() + "";
-        var item_name = $("#item_name").val() + "";
-        var item_qty = $("#item_qty").val() + "";
-        var item_price = $("#item_price").val() + "";
-
-        var item = {};
-        item["item_id"] = item_id;
-        item["item_name"] = item_name;
-        item["item_qty"] = item_qty;
-        item["item_price"] = item_price;
-        data["order_items"].push(item);
-
-
-        var ajax = $.ajax({
-            type: "POST",
-            url: "/orders",
-            contentType: "application/json",
-            data: JSON.stringify(data),
-        });
-
-        ajax.done(function(res){
-            update_form_data(res)
-            flash_message("Success")
-        });
-
-        ajax.fail(function(res){
-            flash_message(res.responseJSON.message)
-        });
-    });
-    
-    // ****************************************
     // Retrieve an Order
     // ****************************************
 
@@ -104,7 +61,76 @@ $(function () {
     });
 
 
+    // ****************************************
+    // Create an order
+    // ****************************************
+
+    $("#create-btn").click(function () {
+        
+        var cust_id =  $("#cust_id").val() + "";
+
+        var data = {
+            "cust_id": cust_id,
+            "order_items":[]
+        };
+
+        var item_id = $("#item_id").val() + "";
+        var item_name = $("#item_name").val() + "";
+        var item_qty = $("#item_qty").val() + "";
+        var item_price = $("#item_price").val() + "";
+
+        var item = {};
+        item["item_id"] = item_id;
+        item["item_name"] = item_name;
+        item["item_qty"] = item_qty;
+        item["item_price"] = item_price;
+        data["order_items"].push(item);
+
+        var ajax = $.ajax({
+            type: "POST",
+            url: "/orders",
+            contentType: "application/json",
+            data: JSON.stringify(data),
+        });
+
+        ajax.done(function(res){
+            update_form_data(res)
+            flash_message("Success")
+        });
+
+        ajax.fail(function(res){
+            flash_message(res.responseJSON.message)
+        });
+    });
+
+    // Cancel an Order
+    $("#cancel-btn").click(function () {
+
+        var order_id = $("#order_id").val().trim();
+    
+        if (order_id == "" || order_id == "undefined")
+        {
+            flash_message("Please enter order id")
+            return 
+        }
+        var ajax = $.ajax({
+            type: "PUT",
+            url: "/orders/" + order_id + "/cancel", data: '',
+        })
+
+        ajax.done(function(res){
+            clear_form_data()
+            flash_message("Order has been Cancelled!")
+        });
+
+        ajax.fail(function(res){
+            flash_message("No orders found!")
+        });
+    });
+
+    // ****************************************
     // Delete an Order
+    // ****************************************
     $("#delete-btn").click(function () {
 
         var order_id = $("#order_id").val();
@@ -126,34 +152,38 @@ $(function () {
         });
     });
 
-     // Cancel an Order
-    $("#cancel-btn").click(function () {
-
-        var order_id = $("#order_id").val().trim();
-
-        if (order_id == "" || order_id == "undefined")
-        {
-            flash_message("Please enter order id")
-            return
+    const listOrders = (res) => {
+        $("#search_results").empty();
+        for (let order of res) {
+            console.log(order);
+            const row =
+                '<tr><th scope="row">' +
+                order.id +
+                "</th><td>" +
+                order.cust_id +
+                "</td><td>" +
+                order.status +
+                "</td></tr>";
+            $("#search_results").append(row);
         }
+    };
 
-        var ajax = $.ajax({
-            type: "PUT",
-            url: "/orders/" + order_id + "/cancel",
+    // ****************************************
+    // List all orders
+    // ****************************************
+    $("#list-btn").click(function () {
+        const ajax = $.ajax({
+            type: "GET",
+            url: "/orders",
             contentType: "application/json",
-            data: '',
-        })
-
-        ajax.done(function(res){
-            clear_form_data()
-            flash_message("Order has been Cancelled!")
+            data: "",
         });
 
-        ajax.fail(function(res){
-            flash_message("No orders found!")
+        ajax.done((res) => {
+            listOrders(res);
+            flash_message(`Success. List returns ${res.length} order(s).`);
         });
     });
-
 
     // ****************************************
     // Clear the form
@@ -163,7 +193,7 @@ $(function () {
         clear_form_data()
     });
 
-          // ****************************************
+    // ****************************************
     // Update Order
     // ****************************************
 
@@ -205,6 +235,4 @@ $(function () {
         });
 
     });
-    
-
 })
