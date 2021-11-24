@@ -122,18 +122,19 @@ $(function () {
             $("#search_results").empty();
             $("#search_results").append('<table class="table-striped" cellpadding="10">');
             var header = '<tr>'
-            header += '<th style="width:10%">order_id</th>'
-            header += '<th style="width:15%">cust_id</th>'
-            header += '<th style="width:15%">status</th>'
-            header += '<th style="width:15%">item_id</th>'
-            header += '<th style="width:15%">item_name</th>'
-            header += '<th style="width:15%">item_qty</th>'
-            header += '<th style="width:15%">item_price</th></tr>'
+            header += '<th style="width:10%">id</th>'
+            header += '<th style="width:10%">cust_id</th>'
+            header += '<th style="width:20%">status</th>'
+            header += '<th style="width:10%">item_id</th>'
+            header += '<th style="width:20%">item_name</th>'
+            header += '<th style="width:20%">item_qty</th>'
+            header += '<th style="width:20%">item_price</th></tr>'
             $("#search_results").append(header);
             var firstOrder = "";
             for(var i = 0; i < res.length; i++) {
                 var order = res[i];
-                var row = "<tr><td>"+order.order_id+"</td><td>"+order.cust_id+"</td><td>"+order.status+"</td><td>"+order.item_id+"</td><td>"+order.item_name+"</td><td>"+order.item_qty+"</td><td>"+order.item_price+"</td><tr>";
+                first_order_items = order.order_items[0]
+                var row = "<tr><td>"+order.id+"</td><td>"+order.cust_id+"</td><td>"+order.status+"</td><td>"+first_order_items.item_id+"</td><td>"+first_order_items.item_name+"</td><td>"+first_order_items.item_qty+"</td><td>"+first_order_items.item_price+"</td><tr>";
                 $("#search_results").append(row);
                 if (i == 0) {
                     firstOrder = order;
@@ -216,7 +217,8 @@ $(function () {
         clear_form_data()
     });
 
-          // ****************************************
+
+    // ****************************************
     // Update Order
     // ****************************************
 

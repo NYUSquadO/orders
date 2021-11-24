@@ -117,7 +117,6 @@ Scenario: Query an Order by cust_id
     And I set the "cust_id" to "72"
     And I press the "Search" button
     Then I should see "72" in the "cust_id" field
-    And I should see "1" in the "order_id" field
     And I should see "switch" in the "item_name" field
     And I should see "14" in the "item_id" field
     And I should see "1" in the "item_qty" field
