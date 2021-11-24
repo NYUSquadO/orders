@@ -103,6 +103,59 @@ $(function () {
 
     });
 
+    // ****************************************
+    // Query an Order by cust_id
+    // ****************************************
+    $("#search-btn").click(function () {
+
+        var cust_id = $("#cust_id").val();
+        
+        var ajax = $.ajax({
+            type: "GET",
+            url: "/orders?cust_id=" + cust_id,
+            contentType: "application/json",
+            data: ''
+        })
+
+        ajax.done(function(res){
+            //alert(res.toSource())
+            $("#search_results").empty();
+            $("#search_results").append('<table class="table-striped" cellpadding="10">');
+            var header = '<tr>'
+            header += '<th style="width:10%">order_id</th>'
+            header += '<th style="width:15%">cust_id</th>'
+            header += '<th style="width:15%">status</th>'
+            header += '<th style="width:15%">item_id</th>'
+            header += '<th style="width:15%">item_name</th>'
+            header += '<th style="width:15%">item_qty</th>'
+            header += '<th style="width:15%">item_price</th></tr>'
+            $("#search_results").append(header);
+            var firstOrder = "";
+            for(var i = 0; i < res.length; i++) {
+                var order = res[i];
+                var row = "<tr><td>"+order.order_id+"</td><td>"+order.cust_id+"</td><td>"+order.status+"</td><td>"+order.item_id+"</td><td>"+order.item_name+"</td><td>"+order.item_qty+"</td><td>"+order.item_price+"</td><tr>";
+                $("#search_results").append(row);
+                if (i == 0) {
+                    firstOrder = order;
+                }
+            }
+
+            $("#search_results").append('</table>');
+
+            // copy the first result to the form
+            if (firstOrder != "") {
+                update_form_data(firstOrder)
+            }
+
+            flash_message("Success")
+        });
+
+        ajax.fail(function(res){
+            flash_message(res.responseJSON.message)
+        });
+
+    });
+
 
     // Delete an Order
     $("#delete-btn").click(function () {

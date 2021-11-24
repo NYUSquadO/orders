@@ -148,6 +148,7 @@ def list_orders():
 
     if customer_id:
         orders = Order.find_by_customer(customer_id)
+        app.logger.info("search for customer %s", customer_id)
     elif item_id:
         orders = Order.find_by_item(item_id)
     else:
