@@ -112,6 +112,15 @@ Scenario: Update an Order
     Then I should see "200" in the "cust_id" field
 
 
+Scenario: List all order
+    When I visit the "Home Page"
+    And I press the "List" button
+    Then I should see the message "Success"
+    And I should see "1" in the search results
+    And I should see "2" in the search results
+    And I should see "3" in the search results
+    And I should see "4" in the search results
+    
 Scenario: Query an Order by cust_id
     When I visit the "Home Page"    
     And I set the "cust_id" to "72"

@@ -82,26 +82,27 @@
                   <button type="submit" class="btn btn-success" id="create-btn">Create</button>
                   <button type="submit" class="btn btn-primary" id="clear-btn">Clear</button>
                   <button type="submit" class="btn btn-warning" id="update-btn">Update</button>
+                  <button type="submit" class="btn btn-success" id="list-btn">List</button>
                 </div>
               </div>
           </div> <!-- form div -->
 
         <!-- Search Results -->
-        <div class="table-responsive col-md-12" id="search_results">
-          <table class="table-striped">
-            <thead>
+        <table class="table table-hover table-striped caption-top">
+          <caption>
+            ORDERS
+          </caption>
+          <thead>
             <tr>
-                <th class="col-md-1">order_id</th>
-                <th class="col-md-1">cust_id</th>
-                <th class="col-md-2">status</th>
-                <th class="col-md-1">item_id</th>
-                <th class="col-md-2">item_name</th>
-                <th class="col-md-1">item_qty</th>
-                <th class="col-md-2">item_price</th>
+              <th scope="col" style="width: 8%">Order ID</th>
+              <th scope="col" style="width: 10%">Customer ID</th>
+              <th scope="col" style="width: 10%">Status</th>
             </tr>
-            </thead>
-          </table>
-        </div>
+          </thead>
+          <tbody id="search_results"></tbody>
+        </table>
+
+
 
 
         <footer>
