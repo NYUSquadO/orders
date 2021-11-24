@@ -52,7 +52,9 @@ cd /vagrant
 You will now be inside the Linux virtual machine so all commands will be Linux commands.
 
 ## Manually running the Tests
+This repository has both unit tests and integration tests. You can now run `nosetests` and `behave` to run the TDD and BDD tests respectively.
 
+### Test Driven Development (TDD)
 Run the tests using `nosetests`
 
 ```shell
@@ -66,6 +68,25 @@ $ coverage report -m
 
  If you use programming editors like VS Code, it's useful that you install plug-ins that will use `pylint` while you are editing. This help you catch a lot of errors while you code. It's always helpful to code with pylint active.
 
+### Behavior Driven Development (BDD)
+
+These tests require the service to be running becasue unlike the the TDD unit tests that test the code locally, these BDD intagration tests are using Selenium to manipulate a web page on a running server.
+
+Run the tests using `behave`
+
+```sh
+honcho start &
+behave
+```
+
+Note that the `&` runs the server in the background. To stop the server, you must bring it to the foreground and then press `Ctrl+C`
+
+Stop the server with
+
+```sh
+fg
+<Ctrl+C>
+```
 ## Exit the Virtual Machine
 
 When you are done, you can exit and shut down the vm with:
@@ -83,10 +104,13 @@ $ vagrant destroy
 
 ## What's featured in the project?
 
-    * app/routes.py -- the main Service routes using Python Flask
-    * app/models.py -- the data model using SQLAlchemy
-    * tests/test_routes.py -- test cases against the Order service
-    * tests/test_models.py -- test cases against the Order model
+    * ./service/routes.py -- the main Service routes using Python Flask
+    * ./service/models.py -- the data model using SQLAlchemy
+    * ./service/error_handlers.py -- these error handlers send back json
+    * ./tests/test_routes.py -- test cases against the Order service
+    * ./tests/test_models.py -- test cases against the Order model
+    * ./features/orders.feature -- Behave feature file
+    * ./features/steps/steps.py -- Behave step definitions
 
 | Endpoint       |    Method  | Path          |                      Description
 |----------------|-------|-------------|     -------------------------
