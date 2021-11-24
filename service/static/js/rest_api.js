@@ -129,6 +129,60 @@ $(function () {
     });
 
     // ****************************************
+    // Query an Order by cust_id
+    // ****************************************
+    $("#search-btn").click(function () {
+
+        var cust_id = $("#cust_id").val();
+        
+        var ajax = $.ajax({
+            type: "GET",
+            url: "/orders?cust_id=" + cust_id,
+            contentType: "application/json",
+            data: ''
+        })
+
+        ajax.done(function(res){
+            //alert(res.toSource())
+            $("#search_results").empty();
+            $("#search_results").append('<table class="table-striped" cellpadding="10">');
+            var header = '<tr>'
+            header += '<th style="width:10%">id</th>'
+            header += '<th style="width:10%">cust_id</th>'
+            header += '<th style="width:20%">status</th>'
+            header += '<th style="width:10%">item_id</th>'
+            header += '<th style="width:20%">item_name</th>'
+            header += '<th style="width:20%">item_qty</th>'
+            header += '<th style="width:20%">item_price</th></tr>'
+            $("#search_results").append(header);
+            var firstOrder = "";
+            for(var i = 0; i < res.length; i++) {
+                var order = res[i];
+                first_order_items = order.order_items[0]
+                var row = "<tr><td>"+order.id+"</td><td>"+order.cust_id+"</td><td>"+order.status+"</td><td>"+first_order_items.item_id+"</td><td>"+first_order_items.item_name+"</td><td>"+first_order_items.item_qty+"</td><td>"+first_order_items.item_price+"</td><tr>";
+                $("#search_results").append(row);
+                if (i == 0) {
+                    firstOrder = order;
+                }
+            }
+
+            $("#search_results").append('</table>');
+
+            // copy the first result to the form
+            if (firstOrder != "") {
+                update_form_data(firstOrder)
+            }
+
+            flash_message("Success")
+        });
+
+        ajax.fail(function(res){
+            flash_message(res.responseJSON.message)
+        });
+
+    });
+
+    // ****************************************
     // Delete an Order
     // ****************************************
     $("#delete-btn").click(function () {
@@ -192,6 +246,7 @@ $(function () {
         $("#order_id").val("");
         clear_form_data()
     });
+
 
     // ****************************************
     // Update Order
