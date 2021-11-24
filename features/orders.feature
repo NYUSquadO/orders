@@ -111,3 +111,13 @@ Scenario: Update an Order
     And I press the "Retrieve" button
     Then I should see "200" in the "cust_id" field
 
+
+Scenario: Query an Order by cust_id
+    When I visit the "Home Page"    
+    And I set the "cust_id" to "72"
+    And I press the "Search" button
+    Then I should see "72" in the "cust_id" field
+    And I should see "switch" in the "item_name" field
+    And I should see "14" in the "item_id" field
+    And I should see "1" in the "item_qty" field
+    And I should see "349.99" in the "item_price" field
