@@ -48,7 +48,7 @@ def step_impl(context):
 		expect(context.resp.status_code).to_equal(204)
 
 	# load the database with new orders
-	create_url = context.base_url + '/orders'
+	create_url = context.base_url + '/api/orders'
 	for row in context.table:
 		
 		data = {

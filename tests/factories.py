@@ -44,4 +44,4 @@ class OrderFactory(factory.Factory):
     id = factory.Sequence(lambda n: n)
     cust_id = FuzzyChoice(choices = [101, 102, 103, 104])
     order_items = [OrderItemFactory()]
-    status = FuzzyChoice(choices = [OrderStatus.Placed, OrderStatus.Default])
+    status = FuzzyChoice(choices = [OrderStatus.Received, OrderStatus.Processing])

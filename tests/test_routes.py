@@ -18,9 +18,9 @@ from service.routes import app
 from .factories import OrderFactory, OrderItemFactory
 
 DATABASE_URI = config.DATABASE_URI
-BASE_URL = "/orders"
-CONTENT_TYPE_JSON = "application/json"
 BASE_API = "/api/orders"
+BASE_URL = "/orders" #TODO : Delete this after all apis refactored with restx
+CONTENT_TYPE_JSON = "application/json"
 
 ######################################################################
 #  T E S T   C A S E S
@@ -59,9 +59,8 @@ class TestOrderResourceServer(TestCase):
         for _ in range(count):
             item = OrderItemFactory()
             test_order = OrderFactory(order_items=[item])
-
             resp = self.app.post(
-                BASE_URL, json=test_order.serialize(), content_type=CONTENT_TYPE_JSON
+                BASE_API, json=test_order.serialize(), content_type=CONTENT_TYPE_JSON
             )
             self.assertEqual(
                 resp.status_code, status.HTTP_201_CREATED, "Could not create test order"
@@ -73,9 +72,7 @@ class TestOrderResourceServer(TestCase):
             for i, item in enumerate(order_items):
                 test_order.order_items[i].item_id = item["item_id"]
             orders.append(test_order)
-        #print(f'orders :: {orders}, count :: {count}')
-        #for order in orders:
-        #    print(order.order_items)
+
         return orders
 
 
@@ -94,7 +91,7 @@ class TestOrderResourceServer(TestCase):
         test_order = OrderFactory()
         logging.debug(test_order)
         resp = self.app.post(
-            BASE_URL, json=test_order.serialize(), content_type=CONTENT_TYPE_JSON
+            BASE_API, json=test_order.serialize(), content_type=CONTENT_TYPE_JSON
         )
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
         # Make sure location header is set
@@ -124,13 +121,13 @@ class TestOrderResourceServer(TestCase):
     def test_create_order_no_data(self):
         """ Create Order with missing data """
         resp = self.app.post(
-            BASE_URL, json={}, content_type="application/json"
+            BASE_API, json={}, content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_order_no_content_type(self):
         """ Create a Order with no content type """
-        resp = self.app.post(BASE_URL)
+        resp = self.app.post(BASE_API)
         self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
     def test_create_order_bad_custid(self):
@@ -140,7 +137,7 @@ class TestOrderResourceServer(TestCase):
         test_order = order.serialize()
         test_order["cust_id"] = "CUST_ID"    # wrong data type
         resp = self.app.post(
-            BASE_URL, json=test_order, content_type="application/json"
+            BASE_API, json=test_order, content_type="application/json"
         )
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -174,7 +171,7 @@ class TestOrderResourceServer(TestCase):
         test_order = OrderFactory()
         logging.debug(test_order)
         resp = self.app.post(
-            "/orders", json=test_order.serialize(), content_type="application/json")
+            BASE_API, json=test_order.serialize(), content_type="application/json")
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
         # update the cust_id
         new_order = resp.get_json()
@@ -203,7 +200,7 @@ class TestOrderResourceServer(TestCase):
         test_order_item = OrderItemFactory()
         logging.debug(test_order_item)
         resp = self.app.post(
-            "{0}/{1}/items".format(BASE_URL, test_order.id),
+            "{0}/{1}/items".format(BASE_API, test_order.id),
             json=test_order_item.serialize(), 
             content_type=CONTENT_TYPE_JSON
         )
@@ -216,7 +213,7 @@ class TestOrderResourceServer(TestCase):
         # Create a test_order
         test_order = self._create_orders(1)[0]
         resp = self.app.post(
-            "{0}/{1}/items".format(BASE_URL, test_order.id),
+            "{0}/{1}/items".format(BASE_API, test_order.id),
             json={}, 
             content_type=CONTENT_TYPE_JSON
         )
@@ -226,7 +223,7 @@ class TestOrderResourceServer(TestCase):
         """Add OrderItem No Content"""
         # Create a test_order
         test_order = self._create_orders(1)[0]
-        resp = self.app.post("{0}/{1}/items".format(BASE_URL, test_order.id))
+        resp = self.app.post("{0}/{1}/items".format(BASE_API, test_order.id))
         self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
     def test_add_item_wrong_type(self):
@@ -239,7 +236,7 @@ class TestOrderResourceServer(TestCase):
         logging.debug(test_order_item)
         test_order_item.item_id = "ID"
         resp = self.app.post(
-            "{0}/{1}/items".format(BASE_URL, test_order.id),
+            "{0}/{1}/items".format(BASE_API, test_order.id),
             json=test_order_item.serialize(), 
             content_type=CONTENT_TYPE_JSON
         )
@@ -250,7 +247,7 @@ class TestOrderResourceServer(TestCase):
         logging.debug(test_order_item)
         test_order_item.item_name = 0
         resp = self.app.post(
-            "{0}/{1}/items".format(BASE_URL, test_order.id),
+            "{0}/{1}/items".format(BASE_API, test_order.id),
             json=test_order_item.serialize(), 
             content_type=CONTENT_TYPE_JSON
         )
@@ -261,7 +258,7 @@ class TestOrderResourceServer(TestCase):
         logging.debug(test_order_item)
         test_order_item.item_qty = "QTY"
         resp = self.app.post(
-            "{0}/{1}/items".format(BASE_URL, test_order.id),
+            "{0}/{1}/items".format(BASE_API, test_order.id),
             json=test_order_item.serialize(), 
             content_type=CONTENT_TYPE_JSON
         )
@@ -272,7 +269,7 @@ class TestOrderResourceServer(TestCase):
         logging.debug(test_order_item)
         test_order_item.item_price = "PRICE"
         resp = self.app.post(
-            "{0}/{1}/items".format(BASE_URL, test_order.id),
+            "{0}/{1}/items".format(BASE_API, test_order.id),
             json=test_order_item.serialize(), 
             content_type=CONTENT_TYPE_JSON
         )
@@ -302,7 +299,7 @@ class TestOrderResourceServer(TestCase):
         test_order_item = OrderItemFactory()
         logging.debug(test_order_item)
         resp = self.app.post(
-            "{0}/{1}/items".format(BASE_URL, order.id),
+            "{0}/{1}/items".format(BASE_API, order.id),
             json=test_order_item.serialize(), 
             content_type=CONTENT_TYPE_JSON
         )
@@ -333,7 +330,7 @@ class TestOrderResourceServer(TestCase):
         logging.debug(test_item)
         print(test_item.serialize())
         resp = self.app.post(
-            "{0}/{1}/items".format(BASE_URL, test_order.id),
+            "{0}/{1}/items".format(BASE_API, test_order.id),
             json=test_item.serialize(), 
             content_type=CONTENT_TYPE_JSON
         )
@@ -363,7 +360,7 @@ class TestOrderResourceServer(TestCase):
         logging.debug(test_item)
         print(test_item.serialize())
         resp = self.app.post(
-            "{0}/{1}/items".format(BASE_URL, test_order.id),
+            "{0}/{1}/items".format(BASE_API, test_order.id),
             json=test_item.serialize(), 
             content_type=CONTENT_TYPE_JSON
         )
@@ -390,7 +387,7 @@ class TestOrderResourceServer(TestCase):
         logging.debug(test_item)
         print(test_item.serialize())
         resp = self.app.post(
-            "{0}/{1}/items".format(BASE_URL, test_order.id),
+            "{0}/{1}/items".format(BASE_API, test_order.id),
             json=test_item.serialize(), 
             content_type=CONTENT_TYPE_JSON
         )
@@ -415,7 +412,7 @@ class TestOrderResourceServer(TestCase):
         # Add a test_item
         test_order_item = OrderItemFactory()
         resp = self.app.post(
-            "{0}/{1}/items".format(BASE_URL, order.id),
+            "{0}/{1}/items".format(BASE_API, order.id),
             json=test_order_item.serialize(),
             content_type=CONTENT_TYPE_JSON
         )
