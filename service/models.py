@@ -102,9 +102,9 @@ class OrderItem(db.Model):
 
 class OrderStatus(Enum):
     """ Enumeration of valid Order Status """
-    Placed = 0
-    Cancelled = 1
-    Default = 3
+    Received = 0
+    Processing = 1
+    Cancelled = 2
 
 class Order(db.Model):
     """
@@ -118,7 +118,7 @@ class Order(db.Model):
     cust_id  = db.Column(db.Integer)             #Customer ID for the order
     order_items = db.relationship('OrderItem', backref='order', lazy = True, \
         cascade = "all,delete") #Items in the order
-    status = db.Column(db.Enum(OrderStatus), nullable=False, server_default=(OrderStatus.Default.name)) # status of the order
+    status = db.Column(db.Enum(OrderStatus), nullable=False, server_default=(OrderStatus.Received.name)) # status of the order
 
     def __repr__(self):
         return "<Order id=[%s] placed by cust_id=[%s]>" % (self.id, self.cust_id)

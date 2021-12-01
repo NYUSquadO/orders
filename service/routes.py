@@ -5,8 +5,8 @@ Paths:
 ------
 GET / - Displays a UI for Selenium testing
 
-# TODO: Describe what service does here
-A collection of order items created from products and quantity
+# Orders service providing REST APIs to support CRUD + List + Cancel + Query operations on orders
+# and order items
 """
 
 from flask import jsonify, request, url_for, make_response, abort
@@ -18,7 +18,7 @@ from . import status  # HTTP Status Codes
 # For this example we'll use SQLAlchemy, a popular ORM that supports a
 # variety of backends including SQLite, MySQL, and PostgreSQL
 from flask_sqlalchemy import SQLAlchemy
-from service.models import Order, OrderItem
+from service.models import Order, OrderItem, DataValidationError
 
 # Import Flask application
 from . import app
@@ -63,6 +63,9 @@ create_item_model = api.model('OrderItem', {
                                 descrption='Quantity for the item'),
     'item_price': fields.Float(required=True,
                               description='Price of the item'),  
+    'order_id' : fields.Integer(readOnly=True,
+                                  description='The order id that the item corresponds to'),
+
 })
 
 item_model = api.inherit(
@@ -71,9 +74,7 @@ item_model = api.inherit(
     {
         'id': fields.Integer(readOnly=True,
                                   description='The unique item id assigned internally by service'),
-        'order_id' : fields.Integer(readOnly=True,
-                                  description='The order id that the item corresponds to'),
-                                  
+                                          
     }
 )
 # Define the order model so that the docs reflect what can be sent
@@ -95,6 +96,21 @@ order_model = api.inherit(
         
     }
 )
+######################################################################
+# Special Error Handlers
+######################################################################
+@api.errorhandler(DataValidationError)
+def request_validation_error(error):
+    """ Handles Value Errors from bad data """
+    message = str(error)
+    app.logger.error(message)
+    return {
+        'status_code': status.HTTP_400_BAD_REQUEST,
+        'error': 'Bad Request',
+        'message': message
+    }, status.HTTP_400_BAD_REQUEST
+
+######################################################################
 
 ######################################################################
 #  PATH: /orders/{id}
@@ -113,7 +129,7 @@ class OrderResource(Resource):
     # ------------------------------------------------------------------
     # RETRIEVE AN ORDER
     # ------------------------------------------------------------------
-    @api.doc('get_orders')
+    @api.doc('get_order')
     @api.response(404, 'Order not found')
     @api.marshal_with(order_model)
     def get(self, order_id):
@@ -130,26 +146,68 @@ class OrderResource(Resource):
 
 
 ######################################################################
-# CREATE ORDER
+#  PATH: /orders
 ######################################################################
-@app.route("/orders", methods=["POST"])
-def create_order():
-    """
-    Creates an Order
-    This endpoint will create an Order based the data in the body that is posted
-    """
-    app.logger.info("Request to create an Order")
-    check_content_type("application/json")
-    order = Order()
-    order.deserialize(request.get_json())
-    order.create()
-    message = order.serialize()
-    location_url = api.url_for(OrderResource, order_id=order.id, _external=True)
+@api.route('/orders', strict_slashes=False)
+class OrderCollection(Resource):
+    """ Handles all interactions with Orders """
+    
+    #------------------------------------------------------------------
+    # CREATE AN ORDER
+    #------------------------------------------------------------------
+    @api.doc('create_order')
+    @api.response(400, 'The posted data was not valid')
+    @api.expect(create_order_model)
+    @api.marshal_with(order_model, code=201)
+    def post(self):
+        """
+        Creates an Order
+        This endpoint will create an Order based the data in the body that is posted
+        """
+        app.logger.info('Request to Create an Order')
 
-    app.logger.info("Order with ID [%s] created.", order.id)
-    return make_response(
-        jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
-    )
+        check_content_type("application/json")
+        order = Order()
+        app.logger.debug('Payload = %s', api.payload)
+        order.deserialize(api.payload)
+        order.create()        
+        app.logger.info("Order with ID [%s] created.", order.id)
+        location_url = api.url_for(OrderResource, order_id=order.id, _external=True)
+        return order.serialize(), status.HTTP_201_CREATED, {'Location': location_url}
+
+
+######################################################################
+#  PATH: /orders
+######################################################################
+@api.route('/orders/<int:order_id>/items', strict_slashes=False)
+class OrderItemCollection(Resource):
+    """ Handles all interactions with Orders """
+    
+    #------------------------------------------------------------------
+    # ADD ITEM TO ORDER
+    #------------------------------------------------------------------
+    @api.doc('add_item')
+    @api.response(400, 'The posted data was not valid')
+    @api.expect(create_item_model)
+    @api.marshal_with(item_model, code=201)
+    def post(self, order_id):
+        """
+        Add an Item
+        This endpoint will add an Item to the Order based the data in the body and the order_id
+        """
+        app.logger.info('Request to add an item')
+
+        check_content_type("application/json")
+
+        order = Order.find_or_404(order_id)
+        order_item = OrderItem()
+        app.logger.debug('Payload = %s', api.payload)
+        order_item.deserialize(api.payload)
+        order.order_items.append(order_item)
+        order.save()    
+        app.logger.info("Item with ID [%s] added.", order_item.id)
+        location_url = api.url_for(OrderItemResource, order_id=order.id, item_id = order_item.id, _external=True)
+        return order_item.serialize(), status.HTTP_201_CREATED, {'Location': location_url}
 
 ######################################################################
 # DELETE ORDER
@@ -279,31 +337,6 @@ class OrderItemResource(Resource):
             abort(status.HTTP_404_NOT_FOUND, "Item was not found.")
         print(item_obj)
         return item_obj, status.HTTP_200_OK
-
-######################################################################
-# ADD ITEM
-######################################################################
-@app.route("/orders/<int:order_id>/items", methods=["POST"])
-def add_item(order_id):
-    """
-    Add an Item
-    This endpoint will add an Item to the Order based the data in the body and the order_id
-    """
-    app.logger.info("Request to add an item")
-    check_content_type("application/json")
-    order = Order.find_or_404(order_id)
-    order_item = OrderItem()
-    order_item.deserialize(request.get_json())
-    order.order_items.append(order_item)
-    order.save()
-    message = order_item.serialize()
-    # location_url = url_for("get_item", order_id=order.id, item_id=order_item.id, _external=True)
-    location_url = "To be implemented"
-
-    app.logger.info("Item with ID [%s] added.", order_item.id)
-    return make_response(
-        jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
-    )
 
 ######################################################################
 # LIST ALL ITEMS IN AN ORDER

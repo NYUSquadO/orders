@@ -42,7 +42,7 @@ $(function () {
 
         var ajax = $.ajax({
             type: "GET",
-            url: "/orders/" + order_id,
+            url: "/api/orders/" + order_id,
             contentType: "application/json",
             data: ''
         })
@@ -88,7 +88,7 @@ $(function () {
 
         var ajax = $.ajax({
             type: "POST",
-            url: "/orders",
+            url: "/api/orders",
             contentType: "application/json",
             data: JSON.stringify(data),
         });
