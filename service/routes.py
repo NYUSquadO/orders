@@ -53,39 +53,46 @@ api = Api(app,
           prefix='/api'
           )
 
-# Define the model so that the docs reflect what can be sent
-create_item_model = api.model('Item', {
+# Define the OrderItem model so that the docs reflect what can be sent
+create_item_model = api.model('OrderItem', {
     'item_id': fields.Integer(required=True,
-                                 description='Item id of the item'),
+                              description='The product ID that identifies the item'),
     'item_name': fields.String(required=True,
-                            description='Name of the item'),
+                               description='The name of the item'),
     'item_qty': fields.Integer(required=True,
-                               description='Quantity of the item'),
+                                descrption='Quantity for the item'),
     'item_price': fields.Float(required=True,
-                          description='Price of the item')
+                              description='Price of the item'),  
 })
 
 item_model = api.inherit(
-    'ItemModel', 
+    'OrderItemModel',
     create_item_model,
     {
-        'id': fields.String(readOnly=True,
-                            description='The unique id assigned internally by service'),
+        'id': fields.Integer(readOnly=True,
+                                  description='The unique item id assigned internally by service'),
+        'order_id' : fields.Integer(readOnly=True,
+                                  description='The order id that the item corresponds to'),
+                                  
     }
 )
-create_model = api.model('Pet', {
-    'customer_id': fields.Integer(required=True,
-                                  description='The customer id of the Order'),
-    'order_items': fields.List(fields.Nested(create_item_model, required=True), required=True,
-                               description='The items in the Order')
+# Define the order model so that the docs reflect what can be sent
+create_order_model = api.model('Order', {
+    'cust_id': fields.Integer(required=True,
+                          description='Customer ID for the customer who placed the order'),
+    'status': fields.String(required=True,
+                              description='Status of the order', enum = ['Received', 'Processing', 'Cancelled'])
 })
 
 order_model = api.inherit(
     'OrderModel', 
-    create_model,
+    create_order_model,
     {
-        'id': fields.String(readOnly=True,
-                            description='The unique id assigned internally by service'),
+        'id': fields.Integer(readOnly=True,
+                            description='The unique order id assigned internally by service'),
+        'order_items': fields.List(fields.Nested(create_item_model, required=True), required=True,
+                               description='Items in the Order')
+        
     }
 )
 
@@ -117,7 +124,7 @@ class OrderResource(Resource):
         app.logger.info("Request for order with id: %s", order_id)
         order = Order.find(order_id)
         if not order:
-            api.abort(status.HTTP_404_NOT_FOUND, "Order was not found.")
+            abort(status.HTTP_404_NOT_FOUND, "Order was not found.")
         return order.serialize(), status.HTTP_200_OK
 
 
@@ -260,7 +267,7 @@ class OrderItemResource(Resource):
         order = Order.find(order_id)
 
         if not order:
-            raise NotFound("Order with id '{}' was not found.".format(order_id))
+            abort(status.HTTP_404_NOT_FOUND, "Order was not found.")
         item_found = False
         item_obj = None
         for item in order.order_items:
@@ -269,7 +276,7 @@ class OrderItemResource(Resource):
                 item_obj = item.serialize()
                 break
         if not item_found:
-            api.abort(status.HTTP_404_NOT_FOUND, "Item was not found.")
+            abort(status.HTTP_404_NOT_FOUND, "Item was not found.")
         print(item_obj)
         return item_obj, status.HTTP_200_OK
 

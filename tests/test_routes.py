@@ -161,7 +161,7 @@ class TestOrderResourceServer(TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
-        self.assertEqual(data["id"], str(test_order.id))
+        self.assertEqual(data["id"], test_order.id)
 
     def test_get_order_not_found(self):
         """Get an Order thats not found"""
@@ -490,16 +490,3 @@ class TestOrderResourceServer(TestCase):
 
         # assert equal length of orders
         self.assertEqual(len(data), len(item_id_orders))
-
-######################################################################
-# Utility functions
-######################################################################
-
-    def get_order(self, order):
-        """ retrieves a pet for use in other actions """
-        resp = self.app.get('/orders/{}'.format(order.id))
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        self.assertGreater(len(resp.data), 0)
-        data = resp.get_json()
-        logging.debug('get_order(data) = %s', data)
-        return data
