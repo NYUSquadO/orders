@@ -10,6 +10,7 @@ import logging
 import config
 from unittest import TestCase
 from urllib.parse import quote_plus
+import json
 
 from service import status  # HTTP Status Codes
 from service.models import OrderStatus, db, init_db
@@ -19,6 +20,7 @@ from .factories import OrderFactory, OrderItemFactory
 DATABASE_URI = config.DATABASE_URI
 BASE_URL = "/orders"
 CONTENT_TYPE_JSON = "application/json"
+BASE_API = "/api/orders"
 
 ######################################################################
 #  T E S T   C A S E S
@@ -115,7 +117,7 @@ class TestOrderResourceServer(TestCase):
         self.assertEqual(len(resp.data), 0)
         # make sure they are deleted
         resp = self.app.get(
-            "{0}/{1}".format(BASE_URL, test_order.id), content_type=CONTENT_TYPE_JSON
+            "{0}/{1}".format(BASE_API, test_order.id), content_type=CONTENT_TYPE_JSON
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -155,7 +157,7 @@ class TestOrderResourceServer(TestCase):
         # get the id of an order
         test_order = self._create_orders(1)[0]
         resp = self.app.get(
-            "/orders/{}".format(test_order.id), content_type=CONTENT_TYPE_JSON
+            "{0}/{1}".format(BASE_API, test_order.id), content_type=CONTENT_TYPE_JSON
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
@@ -163,7 +165,7 @@ class TestOrderResourceServer(TestCase):
 
     def test_get_order_not_found(self):
         """Get an Order thats not found"""
-        resp = self.app.get("/orders/0")
+        resp = self.app.get("{0}/{1}".format(BASE_API, 0), content_type=CONTENT_TYPE_JSON)
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_update_order(self):
@@ -412,7 +414,6 @@ class TestOrderResourceServer(TestCase):
         order = self._create_orders(1)[0]
         # Add a test_item
         test_order_item = OrderItemFactory()
-        logging.debug(test_order_item)
         resp = self.app.post(
             "{0}/{1}/items".format(BASE_URL, order.id),
             json=test_order_item.serialize(),
@@ -421,10 +422,10 @@ class TestOrderResourceServer(TestCase):
         new_order_item = resp.get_json()
         item_id = new_order_item['id']
         # Read the item
-        resp = self.app.get("/orders/{}/items/{}".format(order.id, item_id))
-        data = resp.get_json()
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        print(test_order_item)
+        new_resp = self.app.get(f"{BASE_API}/{order.id}/items/{item_id}")
+        data = new_resp.get_json()
+        self.assertEqual(new_resp.status_code, status.HTTP_200_OK)
+        
         self.assertEqual(data["item_id"], test_order_item.item_id)
         self.assertEqual(data["item_name"], test_order_item.item_name)
         self.assertEqual(data["item_price"], test_order_item.item_price)
@@ -432,13 +433,13 @@ class TestOrderResourceServer(TestCase):
 
     def test_read_item_order_not_found(self):
         """ Read an Item where order does not exist"""
-        resp = self.app.get("/orders/{}/items/{}".format(0, 0))
+        resp = self.app.get("{}/{}/items/{}".format(BASE_API, 0, 0))
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_read_item_item_not_found(self):
         """ Read an Item where item does not exist"""
         order = self._create_orders(1)[0]
-        resp = self.app.get("/orders/{}/items/{}".format(order.id, 0))
+        resp = self.app.get("{}/{}/items/{}".format(BASE_API, order.id, 0))
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_cancel_order(self):
