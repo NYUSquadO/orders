@@ -210,17 +210,9 @@ $(function () {
     // ****************************************
     // List all orders
     // ****************************************
-    $("#list-btn").click(function () {
-        const ajax = $.ajax({
-            type: "GET",
-            url: "/api/orders",
-            contentType: "application/json",
-            data: "",
-        });
-
-        ajax.done((res) => {
-            $("#search_results").empty();
-            $("#search_results").append('<table class="table-striped" cellpadding="10">');
+    const listOrders = (res) => {
+        $("#search_results").empty();
+        $("#search_results").append('<table class="table-striped" cellpadding="10">');
             var header = '<tr>'
             header += '<th style="width:10%">order_id</th>'
             header += '<th style="width:10%">cust_id</th>'
@@ -232,8 +224,65 @@ $(function () {
                 $("#search_results").append(row);
             }
             $("#search_results").append('</table>');
-            flash_message(`Success. List returns ${res.length} order(s).`);
-        });
+    };
+
+
+    // ****************************************
+    // List all items in the order
+    // ****************************************
+    const listItems = (res) => {
+        $("#search_results").empty();
+        $("#search_results").append('<table class="table-striped" cellpadding="10">');
+            var header = '<tr>'
+            header += '<th style="width:10%">item_id</th>'
+            header += '<th style="width:20%">item_name</th>'
+            header += '<th style="width:20%">item_qty</th>'
+            header += '<th style="width:20%">item_price</th></tr>'
+            $("#search_results").append(header);
+            for(var i = 0; i < res.length; i++) {
+                var item = res[i];
+                var row = "<tr><td>"+item.item_id+"</td><td>"+item.item_name+"</td><td>"+item.item_qty+"</td><td>"+item.price+"</td><tr>";
+                $("#search_results").append(row);
+            }
+            $("#search_results").append('</table>');
+    };
+
+
+    // ****************************************
+    // List
+    // ****************************************
+    $("#list-btn").click(function () {
+        
+        var order_id = $("#order_id").val();
+        
+        if (order_id){
+            const ajax = $.ajax({
+                type: "GET",
+                url: "/api/orders/" + order_id + '/items',
+                contentType: "application/json",
+                data: "",
+            });
+
+            ajax.done((res) => {
+                listItems(res);
+                flash_message(`Success. List returns ${res.length} item(s).`);
+            });
+
+        }
+        else {
+            const ajax = $.ajax({
+                type: "GET",
+                url: "/api/orders",
+                contentType: "application/json",
+                data: "",
+            });
+
+            ajax.done((res) => {
+                listOrders(res);
+                flash_message(`Success. List returns ${res.length} order(s).`);
+            });
+
+        }
     });
 
     // ****************************************
