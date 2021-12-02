@@ -373,30 +373,6 @@ class OrderItemResource(Resource):
         return item_obj, status.HTTP_200_OK
 
 
-    #------------------------------------------------------------------
-    # DELETE AN ITEM IN AN ORDER
-    #------------------------------------------------------------------
-    @api.doc('delete_item')
-    @api.response(204, 'Item deleted')
-    def delete(self, order_id, item_id):
-        """
-        Delete an Item in an Order
-        This endpoint will delete an Item based on the order_id and item_id specified in the path
-        """
-        app.logger.info("Request to delete an item in order %s with item_id: %s", order_id, item_id)
-        order = Order.find(order_id)
-
-        if order:
-            for item in order.order_items:
-                if item.id == item_id:
-                    item_found = True
-                    item.delete()
-                    order.save()
-                    app.logger.info("Item with ID [%s] in order %s is deleted.", item_id, order_id)
-                    break
-    
-        return '', status.HTTP_204_NO_CONTENT
-
 ######################################################################
 # DELETE AN ITEM IN AN ORDER
 ######################################################################
