@@ -397,24 +397,31 @@ def delete_item(order_id, item_id):
     
     return make_response("", status.HTTP_204_NO_CONTENT)
 
-
 ######################################################################
-# CANCEL AN ORDER
+# PATH: /orders/{order_id}/cancel
 ######################################################################
-@app.route('/orders/<int:order_id>/cancel', methods=['PUT'])
-def cancel_orders(order_id):
-    """
-    Cancel an Order
-    This endpoint will update an Order based the body that is posted
-    """
-    order = Order.find(order_id)
-    if not order:
-        raise NotFound("Order with id '{}' was not found.".format(order_id))
-    order.status = OrderStatus.Cancelled
-    order.save()
-    return make_response(jsonify(order.serialize()), status.HTTP_200_OK)
-
-
+@api.route('/orders/<int:order_id>/cancel')
+@api.param('order_id', 'The Order identifier')
+class CancelOrderResource(Resource):
+    #------------------------------------------------------------------
+    # CANCEL AN ORDER
+    #------------------------------------------------------------------
+    @api.doc('cancel_orders')
+    @api.response(404, 'Order not found')
+    @api.response(400, 'The Order is not valid for cancel')
+    @api.marshal_with(order_model)
+    def put(self, order_id):
+        """
+        Cancel an Order
+        This endpoint will update an Order based the body that is posted
+        """
+        app.logger.info("Request to cancel order with id: %s", order_id)
+        order = Order.find(order_id)
+        if not order:
+            abort(status.HTTP_404_NOT_FOUND, "Order was not found.")
+        order.status = OrderStatus.Cancelled
+        order.save()
+        return order.serialize(), status.HTTP_200_OK
 
 
 ######################################################################
