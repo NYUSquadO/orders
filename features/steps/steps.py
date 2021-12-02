@@ -44,7 +44,7 @@ def step_impl(context):
 	context.resp = requests.get(context.base_url + '/orders', headers=headers)
 	expect(context.resp.status_code).to_equal(200)
 	for order in context.resp.json():
-		context.resp = requests.delete(context.base_url + '/orders/' + str(order["id"]), headers=headers)
+		context.resp = requests.delete(context.base_url + '/api/orders/' + str(order["id"]), headers=headers)
 		expect(context.resp.status_code).to_equal(204)
 
 	# load the database with new orders

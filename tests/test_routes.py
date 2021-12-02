@@ -108,7 +108,7 @@ class TestOrderResourceServer(TestCase):
         """Delete Order"""
         test_order = self._create_orders(1)[0]
         resp = self.app.delete(
-            "{0}/{1}".format(BASE_URL, test_order.id), content_type=CONTENT_TYPE_JSON
+            "{0}/{1}".format(BASE_API, test_order.id), content_type=CONTENT_TYPE_JSON
         )
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(len(resp.data), 0)
