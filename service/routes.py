@@ -96,9 +96,7 @@ order_model = api.inherit(
         
     }
 )
-# query string arguments
-list_items_args = reqparse.RequestParser()
-list_items_args.add_argument('order_id', type=str, required=True, help='List All items by order_id')
+
 ######################################################################
 # Special Error Handlers
 ######################################################################

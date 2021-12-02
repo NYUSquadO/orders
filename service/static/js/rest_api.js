@@ -147,7 +147,7 @@ $(function () {
             $("#search_results").empty();
             $("#search_results").append('<table class="table-striped" cellpadding="10">');
             var header = '<tr>'
-            header += '<th style="width:10%">id</th>'
+            header += '<th style="width:10%">order_id</th>'
             header += '<th style="width:10%">cust_id</th>'
             header += '<th style="width:20%">status</th>'
             header += '<th style="width:10%">item_id</th>'
@@ -206,21 +206,6 @@ $(function () {
         });
     });
 
-    const listOrders = (res) => {
-        $("#search_results").empty();
-        for (let order of res) {
-            console.log(order);
-            const row =
-                '<tr><th scope="row">' +
-                order.id +
-                "</th><td>" +
-                order.cust_id +
-                "</td><td>" +
-                order.status +
-                "</td></tr>";
-            $("#search_results").append(row);
-        }
-    };
 
     // ****************************************
     // List all orders
@@ -234,7 +219,19 @@ $(function () {
         });
 
         ajax.done((res) => {
-            listOrders(res);
+            $("#search_results").empty();
+            $("#search_results").append('<table class="table-striped" cellpadding="10">');
+            var header = '<tr>'
+            header += '<th style="width:10%">order_id</th>'
+            header += '<th style="width:10%">cust_id</th>'
+            header += '<th style="width:20%">status</th></tr>'
+            $("#search_results").append(header);
+            for(var i = 0; i < res.length; i++) {
+                var order = res[i];
+                var row = "<tr><td>"+order.id+"</td><td>"+order.cust_id+"</td><td>"+order.status+"</td><tr>";
+                $("#search_results").append(row);
+            }
+            $("#search_results").append('</table>');
             flash_message(`Success. List returns ${res.length} order(s).`);
         });
     });
