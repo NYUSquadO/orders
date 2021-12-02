@@ -191,7 +191,7 @@ $(function () {
 
         var ajax = $.ajax({
             type: "DELETE",
-            url: "/orders/" + order_id,
+            url: "/api/orders/" + order_id,
             contentType: "application/json",
             data: '',
         })
