@@ -99,13 +99,13 @@ order_model = api.inherit(
 
 # query string arguments
 order_args = reqparse.RequestParser()
-order_args.add_argument('cust_id', type=int, required=False, help='List Orders by cust_id')
-order_args.add_argument('item_id', type=int, required=False, help='List Orders by item_id')
+order_args.add_argument('cust_id', type=str, required=False, help='List Orders by cust_id')
+order_args.add_argument('item_id', type=str, required=False, help='List Orders by item_id')
 
 
 # query string arguments
 list_items_args = reqparse.RequestParser()
-list_items_args.add_argument('order_id', type=int, required=True, help='List All items by order_id')
+list_items_args.add_argument('order_id', type=str, required=True, help='List All items by order_id')
 
 ######################################################################
 # Special Error Handlers
