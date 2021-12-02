@@ -96,6 +96,9 @@ order_model = api.inherit(
         
     }
 )
+# query string arguments
+list_items_args = reqparse.RequestParser()
+list_items_args.add_argument('order_id', type=str, required=True, help='List All items by order_id')
 ######################################################################
 # Special Error Handlers
 ######################################################################
@@ -170,6 +173,31 @@ class OrderResource(Resource):
 @api.route('/orders', strict_slashes=False)
 class OrderCollection(Resource):
     """ Handles all interactions with Orders """
+    
+    ######################################################################
+    # LIST ALL ORDERS
+    ######################################################################
+    @api.doc('list_orders')
+    @api.marshal_list_with(order_model)
+    def get(self):
+        """Returns all of the Orders"""
+        app.logger.info("Request for order list")
+        orders = []
+        customer_id = request.args.get("cust_id",None)
+        item_id = request.args.get("item_id",None)
+
+        if customer_id:
+            app.logger.info("search for customer %s", customer_id)
+            orders = Order.find_by_customer(customer_id)
+        elif item_id:
+            orders = Order.find_by_item(item_id)
+        else:
+            app.logger.info("search for all orders")
+            orders = Order.all()
+        results = [order.serialize() for order in orders]
+        app.logger.info("Returning %d orders", len(results))
+        return results, status.HTTP_200_OK
+
     
     #------------------------------------------------------------------
     # CREATE AN ORDER
@@ -279,27 +307,7 @@ def update_order_item(order_id, item_id):
         raise NotFound("Item with id '{}' was not found.".format(item_id))
     return make_response(jsonify(return_item.serialize()), status.HTTP_200_OK)
 
-######################################################################
-# LIST ALL ORDERS
-######################################################################
-@app.route("/orders", methods=["GET"])
-def list_orders():
-    """Returns all of the Orders"""
-    app.logger.info("Request for order list")
-    orders = []
-    customer_id = request.args.get("cust_id",None)
-    item_id = request.args.get("item_id",None)
 
-    if customer_id:
-        orders = Order.find_by_customer(customer_id)
-        app.logger.info("search for customer %s", customer_id)
-    elif item_id:
-        orders = Order.find_by_item(item_id)
-    else:
-        orders = Order.all()
-    results = [order.serialize() for order in orders]
-    app.logger.info("Returning %d orders", len(results))
-    return make_response(jsonify(results), status.HTTP_200_OK)
 
 
 

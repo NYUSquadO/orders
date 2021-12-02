@@ -144,7 +144,7 @@ class TestOrderResourceServer(TestCase):
     def test_get_order_list(self):
         """List all Orders"""
         self._create_orders(5)
-        resp = self.app.get("/orders")
+        resp = self.app.get(BASE_API)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), 5)
@@ -460,7 +460,7 @@ class TestOrderResourceServer(TestCase):
 
         customer_id_orders = [order for order in orders if order.cust_id == query_customer_id]
 
-        resp = self.app.get(BASE_URL, query_string = "cust_id={}".format(query_customer_id))
+        resp = self.app.get(BASE_API, query_string = "cust_id={}".format(query_customer_id))
 
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
@@ -480,7 +480,7 @@ class TestOrderResourceServer(TestCase):
                           item.item_id== query_item_id]
 
 
-        resp = self.app.get(BASE_URL, query_string = "item_id={}".format(query_item_id))
+        resp = self.app.get(BASE_API, query_string = "item_id={}".format(query_item_id))
 
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
