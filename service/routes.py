@@ -178,7 +178,10 @@ class OrderCollection(Resource):
     @api.doc('list_orders')
     @api.marshal_list_with(order_model)
     def get(self):
-        """Returns all of the Orders"""
+        """
+            Lists all orders
+            This endpoint will returns all orders in the database
+        """
         app.logger.info("Request for order list")
         orders = []
         customer_id = request.args.get("cust_id",None)
@@ -235,8 +238,8 @@ class OrderItemCollection(Resource):
     @api.marshal_with(item_model)
     def get(self, order_id):
         """
-        Get all items in an order
-        This endpoint will return a list of items in an Order based on it's order_id
+        List all items in an order
+        This endpoint will a list of all items in an Order based on it's order_id
         """
         app.logger.info("Request all items for order with id: %s", order_id)
         order = Order.find(order_id)
