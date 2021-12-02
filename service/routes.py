@@ -224,12 +224,32 @@ class OrderCollection(Resource):
 
 
 ######################################################################
-#  PATH: /orders
+#  PATH: /orders/<int:order_id>/items
 ######################################################################
 @api.route('/orders/<int:order_id>/items', strict_slashes=False)
 class OrderItemCollection(Resource):
     """ Handles all interactions with Orders """
     
+    ######################################################################
+    # LIST ALL ITEMS IN AN ORDER
+    ######################################################################
+    @api.doc('list_items_in_order')
+    @api.marshal_with(item_model)
+    def get(self, order_id):
+        """
+        Get all items in an order
+        This endpoint will return a list of items in an Order based on it's order_id
+        """
+        app.logger.info("Request all items for order with id: %s", order_id)
+        order = Order.find(order_id)
+        if not order:
+            raise NotFound("Order with id '{}' was not found.".format(order_id))
+        items_list = []
+        for item in order.order_items:
+            items_list.append(item.serialize())
+        app.logger.info("Returning items in order: %s", order.id)
+        return items_list, status.HTTP_200_OK
+        
     #------------------------------------------------------------------
     # ADD ITEM TO ORDER
     #------------------------------------------------------------------
@@ -375,25 +395,6 @@ class OrderItemResource(Resource):
                     break
     
         return '', status.HTTP_204_NO_CONTENT
-
-######################################################################
-# LIST ALL ITEMS IN AN ORDER
-######################################################################
-@app.route("/orders/<int:order_id>/items", methods=["GET"])
-def get_items_in_order(order_id):
-    """
-    Get all items in an order
-    This endpoint will return a list of items in an Order based on it's order_id
-    """
-    app.logger.info("Request all items for order with id: %s", order_id)
-    order = Order.find(order_id)
-    if not order:
-        raise NotFound("Order with id '{}' was not found.".format(order_id))
-    items_list = []
-    for item in order.order_items:
-        items_list.append(item.serialize())
-    app.logger.info("Returning items in order: %s", order.id)
-    return make_response(jsonify(items_list), status.HTTP_200_OK)
 
 ######################################################################
 # DELETE AN ITEM IN AN ORDER
