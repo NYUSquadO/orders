@@ -137,7 +137,7 @@ $(function () {
         
         var ajax = $.ajax({
             type: "GET",
-            url: "/orders?cust_id=" + cust_id,
+            url: "/api/orders?cust_id=" + cust_id,
             contentType: "application/json",
             data: ''
         })
@@ -228,7 +228,7 @@ $(function () {
     $("#list-btn").click(function () {
         const ajax = $.ajax({
             type: "GET",
-            url: "/orders",
+            url: "/api/orders",
             contentType: "application/json",
             data: "",
         });
