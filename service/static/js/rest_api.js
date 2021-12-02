@@ -241,7 +241,7 @@ $(function () {
             $("#search_results").append(header);
             for(var i = 0; i < res.length; i++) {
                 var item = res[i];
-                var row = "<tr><td>"+item.item_id+"</td><td>"+item.item_name+"</td><td>"+item.item_qty+"</td><td>"+item.price+"</td><tr>";
+                var row = "<tr><td>"+item.item_id+"</td><td>"+item.item_name+"</td><td>"+item.item_qty+"</td><td>"+item.item_price+"</td><tr>";
                 $("#search_results").append(row);
             }
             $("#search_results").append('</table>');
