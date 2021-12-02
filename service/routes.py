@@ -63,7 +63,7 @@ create_item_model = api.model('OrderItem', {
                                 descrption='Quantity for the item'),
     'item_price': fields.Float(required=True,
                               description='Price of the item'),  
-    'order_id' : fields.Integer(readOnly=True,
+    'order_id' : fields.Integer(required=True,
                                   description='The order id that the item corresponds to'),
 
 })
