@@ -49,6 +49,8 @@ class OrderItem(db.Model):
         Args:
             data (dict): A dictionary containing the resource data
         """
+        logger.info("Deserializing data :: %s", data)
+        
         try:
             # self.order_id = data["order_id"]
             if isinstance(data["item_id"], int):

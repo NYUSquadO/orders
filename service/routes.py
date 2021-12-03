@@ -44,6 +44,8 @@ api = Api(app,
           prefix='/api'
           )
 
+
+
 # Define the OrderItem model so that the docs reflect what can be sent
 create_item_model = api.model('OrderItem', {
     'item_id': fields.Integer(required=True,
@@ -51,11 +53,9 @@ create_item_model = api.model('OrderItem', {
     'item_name': fields.String(required=True,
                                description='The name of the item'),
     'item_qty': fields.Integer(required=True,
-                                descrption='Quantity for the item'),
+                                description='Quantity for the item'),
     'item_price': fields.Float(required=True,
-                              description='Price of the item'),  
-    'order_id' : fields.Integer(required=True,
-                                  description='The order id that the item corresponds to'),
+                              description='Price of the item'),     
 
 })
 
@@ -64,27 +64,35 @@ item_model = api.inherit(
     create_item_model,
     {
         'id': fields.Integer(readOnly=True,
-                                  description='The unique item id assigned internally by service'),
+                                  description='The unique id assigned internally by service'),
+
+        'order_id' : fields.Integer(readOnly=True,
+                                  description='The order id that the item corresponds to'),
                                           
     }
 )
+
 # Define the order model so that the docs reflect what can be sent
 create_order_model = api.model('Order', {
     'cust_id': fields.Integer(required=True,
                           description='Customer ID for the customer who placed the order'),
     'status': fields.String(required=True,
-                              description='Status of the order', enum = ['Received', 'Processing', 'Cancelled'])
+                              description='Status of the order', enum = ['Received', 'Processing', 'Cancelled']),
+    'order_items': fields.List(fields.Nested(create_item_model, required=True), required=True,
+                               description='Items in the Order')
 })
 
 order_model = api.inherit(
-    'OrderModel', 
-    create_order_model,
+    'OrderModel',     
     {
         'id': fields.Integer(readOnly=True,
-                            description='The unique order id assigned internally by service'),
-        'order_items': fields.List(fields.Nested(create_item_model, required=True), required=True,
-                               description='Items in the Order')
-        
+                            description='The unique order id assigned internally by service'),  
+        'cust_id': fields.Integer(required=True,
+                          description='Customer ID for the customer who placed the order'),
+        'status': fields.String(required=True,
+                              description='Status of the order', enum = ['Received', 'Processing', 'Cancelled']),
+        'order_items': fields.List(fields.Nested(item_model, required=True), required=True,
+                               description='Items in the Order')        
     }
 )
 
@@ -399,7 +407,6 @@ class CancelOrderResource(Resource):
     #------------------------------------------------------------------
     @api.doc('cancel_orders')
     @api.response(404, 'Order not found')
-    @api.response(400, 'The Order is not valid for cancel')
     @api.marshal_with(order_model)
     def put(self, order_id):
         """
