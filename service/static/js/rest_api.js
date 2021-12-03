@@ -115,7 +115,7 @@ $(function () {
         }
         var ajax = $.ajax({
             type: "PUT",
-            url: "/orders/" + order_id + "/cancel", data: '',
+            url: "api/orders/" + order_id + "/cancel", data: '',
         })
 
         ajax.done(function(res){
