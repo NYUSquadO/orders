@@ -28,7 +28,7 @@ class TestOrder(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         """ This runs once after the entire test suite """
-        pass
+        db.session.close()
 
     def setUp(self):
         """ This runs before each test """
@@ -217,8 +217,3 @@ class TestOrder(unittest.TestCase):
         self.assertEqual(Order.find_by_customer(query_customer_id)[1].cust_id, query_customer_id)
 
         self.assertEqual(Order.find_by_customer(999).count(), 0)
-
-
-
-
-        
