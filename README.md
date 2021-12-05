@@ -1,6 +1,7 @@
 # Orders
 
-[![Build Status](https://github.com/NYUSquadO/orders/actions/workflows/workflow.yml/badge.svg)](https://github.com/NYUSquadO/orders/actions/workflows/workflow.yml)
+[![Build Status](https://github.com/NYUSquadO/orders/actions/workflows/tdd.yml/badge.svg)](https://github.com/NYUSquadO/orders/actions/workflows/tdd.yml)
+[![Build Status](https://github.com/NYUSquadO/orders/actions/workflows/bdd.yml/badge.svg)](https://github.com/NYUSquadO/orders/actions/workflows/bdd.yml)
 [![codecov](https://codecov.io/gh/NYUSquadO/orders/branch/main/graph/badge.svg?token=95UV2GZXFD)](https://codecov.io/gh/NYUSquadO/orders)
 
 DevOps homework project for CSCI-GA.2820-001 DevOps and Agile Methodologies Fall 2021.
