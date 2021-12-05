@@ -45,7 +45,7 @@ jobs:
       - name: Run the server locally
         run: |
           echo "\n*** CREATING TEST DB ***\n"
-          curl -X PUT http://admin:pass@postgresql:5984/test
+          docker exec -it postgres psql -c 'create database test;' -U postgres
           echo "\n*** STARTING APPLICATION ***\n"
           gunicorn --log-level=critical --bind=0.0.0.0:5000 service:app &
           sleep 5
