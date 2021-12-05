@@ -128,9 +128,8 @@ $ vagrant destroy
 | list_orders   |   GET  | /orders?cust_id=<customer_id>   |    Query for orders by customer ID
 | list_orders   |   GET  | /orders?item_id=<item_id>   |    Query for orders by item ID
 | cancel_orders   |  PUT  | /orders/<int:order_id>/cancel   |  Cancel Order
+| delete_item   |   DELETE | /orders/\<int:order_id>/items/\<int:item_id>   |    Delete item in order based on the item id and order id specified in the path
 
-#IBM Cloud Foundry URL
+# IBM Cloud Foundry URL
 DEV: https://nyu-order-service-fall2101.us-south.cf.appdomain.cloud/
 PROD: https://nyu-order-service-fall2101-prod.us-south.cf.appdomain.cloud/
-
-| delete_item   |   DELETE | /orders/\<int:order_id>/items/\<int:item_id>   |    Delete item in order based on the item id and order id specified in the path
