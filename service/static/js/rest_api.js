@@ -182,6 +182,61 @@ $(function () {
 
     });
 
+
+    // ****************************************
+    // Query an Order by item_id
+    // ****************************************
+    $("#search-item-btn").click(function () {
+
+        var item_id = $("#item_id").val();
+        
+        var ajax = $.ajax({
+            type: "GET",
+            url: "/api/orders?item_id=" + item_id,
+            contentType: "application/json",
+            data: ''
+        })
+
+        ajax.done(function(res){
+            //alert(res.toSource())
+            $("#search_results").empty();
+            $("#search_results").append('<table class="table-striped" cellpadding="10">');
+            var header = '<tr>'
+            header += '<th style="width:10%">order_id</th>'
+            header += '<th style="width:10%">cust_id</th>'
+            header += '<th style="width:20%">status</th>'
+            header += '<th style="width:10%">item_id</th>'
+            header += '<th style="width:20%">item_name</th>'
+            header += '<th style="width:20%">item_qty</th>'
+            header += '<th style="width:20%">item_price</th></tr>'
+            $("#search_results").append(header);
+            var firstOrder = "";
+            for(var i = 0; i < res.length; i++) {
+                var order = res[i];
+                first_order_items = order.order_items[0]
+                var row = "<tr><td>"+order.id+"</td><td>"+order.cust_id+"</td><td>"+order.status+"</td><td>"+first_order_items.item_id+"</td><td>"+first_order_items.item_name+"</td><td>"+first_order_items.item_qty+"</td><td>"+first_order_items.item_price+"</td><tr>";
+                $("#search_results").append(row);
+                if (i == 0) {
+                    firstOrder = order;
+                }
+            }
+
+            $("#search_results").append('</table>');
+
+            // copy the first result to the form
+            if (firstOrder != "") {
+                update_form_data(firstOrder)
+            }
+
+            flash_message("Success")
+        });
+
+        ajax.fail(function(res){
+            flash_message(res.responseJSON.message)
+        });
+
+    });
+
     // ****************************************
     // Delete an Order
     // ****************************************
@@ -229,36 +284,18 @@ $(function () {
     // ****************************************
     $("#list-btn").click(function () {
         
-        var order_id = $("#order_id").val();
-        
-        if (order_id){
-            const ajax = $.ajax({
-                type: "GET",
-                url: "/api/orders/" + order_id + '/items',
-                contentType: "application/json",
-                data: "",
-            });
+        const ajax = $.ajax({
+            type: "GET",
+            url: "/api/orders",
+            contentType: "application/json",
+            data: "",
+        });
 
-            ajax.done((res) => {
-                listItems(res);
-                flash_message(`Success. List returns ${res.length} item(s).`);
-            });
+        ajax.done((res) => {
+            listOrders(res);
+            flash_message(`Success. List returns ${res.length} order(s).`);
+        });
 
-        }
-        else {
-            const ajax = $.ajax({
-                type: "GET",
-                url: "/api/orders",
-                contentType: "application/json",
-                data: "",
-            });
-
-            ajax.done((res) => {
-                listOrders(res);
-                flash_message(`Success. List returns ${res.length} order(s).`);
-            });
-
-        }
     });
 
 

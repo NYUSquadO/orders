@@ -96,6 +96,10 @@ order_model = api.inherit(
     }
 )
 
+# # query string arguments
+# order_args = reqparse.RequestParser()
+# order_args.add_argument('cust_id', type=int, required=False, help='List Orders by cust_id')
+# order_args.add_argument('item_id', type=int, required=False, help='List Orders by item_id')
 ######################################################################
 # Special Error Handlers
 ######################################################################
@@ -175,21 +179,33 @@ class OrderCollection(Resource):
     # LIST ALL ORDERS
     ######################################################################
     @api.doc('list_orders')
+    #@api.expect(order_args, validate=True)
     @api.marshal_list_with(order_model)
     def get(self):
         """
-            Lists all orders
-            This endpoint will returns all orders in the database
+            Lists orders
+            This endpoint will returns all orders
         """
         app.logger.info("Request for order list")
         orders = []
+        # args = order_args.parse_args()
+        # if args['cust_id']:
+        #     app.logger.info('Filtering by cust_id: %s', args['cust_id'])
+        #     orders = Order.find_by_customer(args['cust_id'])
+        # elif args['item_id']:
+        #     app.logger.info('Filtering by item_id: %s', args['item_id'])
+        #     orders = Order.find_by_item(args['item_id'])
+        # else:
+        #     app.logger.info("List all orders")
+        #     orders = Order.all()
         customer_id = request.args.get("cust_id",None)
         item_id = request.args.get("item_id",None)
 
         if customer_id:
-            app.logger.info("search for customer %s", customer_id)
+            app.logger.info('Filtering by cust_id: %s', customer_id)
             orders = Order.find_by_customer(customer_id)
         elif item_id:
+            app.logger.info('Filtering by item_id: %s', item_id)
             orders = Order.find_by_item(item_id)
         else:
             app.logger.info("search for all orders")
