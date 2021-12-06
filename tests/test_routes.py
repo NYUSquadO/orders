@@ -177,7 +177,7 @@ class TestOrderResourceServer(TestCase):
         new_order = resp.get_json()
         new_order["cust_id"] = 23
         resp = self.app.put(
-            "/orders/{}".format(new_order["id"]),
+            "/api/orders/{}".format(new_order["id"]),
             json=new_order,
             content_type="application/json",
         )
@@ -342,7 +342,7 @@ class TestOrderResourceServer(TestCase):
         new_item["item_qty"] = 23
         print(new_item["item_qty"])
         resp = self.app.put(
-            "/orders/{}/items/{}".format(test_order.id, new_item["id"]),
+            "/api/orders/{}/items/{}".format(test_order.id, new_item["id"]),
             json=new_item,
             content_type="application/json",
         )
@@ -372,7 +372,7 @@ class TestOrderResourceServer(TestCase):
         new_item["item_qty"] = 23
         print(new_item["item_qty"])
         resp = self.app.put(
-            "/orders/{}/items/{}".format(100, new_item["id"]),
+            "/api/orders/{}/items/{}".format(100, new_item["id"]),
             json=new_item,
             content_type="application/json",
         )
@@ -399,7 +399,7 @@ class TestOrderResourceServer(TestCase):
         new_item["item_qty"] = 23
         print(new_item["item_qty"])
         resp = self.app.put(
-            "/orders/{}/items/{}".format(test_order.id, 100),
+            "api/orders/{}/items/{}".format(test_order.id, 100),
             json=new_item,
             content_type="application/json",
         )
