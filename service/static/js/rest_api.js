@@ -385,7 +385,7 @@ $(function () {
 
         var ajax = $.ajax({
                 type: "PUT",
-                url: "/orders/" + order_id,
+                url: "/api/orders/" + order_id,
                 contentType: "application/json",
                 data: JSON.stringify(data)
             })

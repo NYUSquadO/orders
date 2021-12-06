@@ -126,7 +126,7 @@ class OrderResource(Resource):
     OrderResource class
     Allows the manipulation of a single Order
     GET /order{id} - Returns an Order with the id
-    PUT /order{id} - Update an Order with the id
+    PUT /order{id} - Update an Order (updates only customer id) with the id
     DELETE /order{id} -  Deletes an Order with the id
     """
 
@@ -166,6 +166,30 @@ class OrderResource(Resource):
             app.logger.info("Order with ID [%s] delete complete.", order_id)
 
         return '', status.HTTP_204_NO_CONTENT
+
+    # ------------------------------------------------------------------
+    # UPDATE AN EXISTING ORDER
+    # ------------------------------------------------------------------
+
+    @api.doc('update_order')
+    @api.response(404, 'Order not found')
+    @api.response(400, 'The posted Order data was not valid')
+    @api.expect(order_model)
+    @api.marshal_with(order_model)
+    def put(self, order_id):
+        """
+        Update a Order
+        This endpoint will update a Order based the body that is posted
+        """
+        app.logger.info('Request to Update a order with id [%s]', order_id)
+        order = Order.find(order_id)
+        if not order:
+            abort(status.HTTP_404_NOT_FOUND, "Order with id '{}' was not found.".format(order_id))
+        app.logger.debug('Payload = %s', api.payload)
+        data = api.payload
+        order.cust_id = data["cust_id"]
+        order.save()
+        return order.serialize(), status.HTTP_200_OK
 
 
 ######################################################################
@@ -282,59 +306,6 @@ class OrderItemCollection(Resource):
 
 
 
-
-######################################################################
-# UPDATE AN EXISTING ORDER
-######################################################################
-@app.route("/orders/<int:order_id>", methods=["PUT"])
-def update_order(order_id):
-    """
-    Update an Order
-    This endpoint will update an Order's cust_id based the id that is posted
-    """
-    app.logger.info("Request to update order with id: %s", order_id)
-    check_content_type("application/json")
-    order = Order.find(order_id)
-    if not order:
-        raise NotFound("Order with id '{}' was not found.".format(order_id))
-    order.deserialize(request.get_json())
-    order.id = order_id
-    order.save()
-    return make_response(jsonify(order.serialize()), status.HTTP_200_OK)
-
-######################################################################
-# UPDATE AN EXISTING ORDER'S ITEMS
-######################################################################
-@app.route("/orders/<int:order_id>/items/<int:item_id>", methods=["PUT"])
-def update_order_item(order_id, item_id):
-    """
-    Update an item in an Order
-    This endpoint will update an Order's item based the id that is posted
-    """
-    app.logger.info("Request to update the item id: %s in order id: %s", item_id, order_id)
-    check_content_type("application/json")
-    order = Order.find(order_id)
-    if not order:
-        raise NotFound("Order with id '{}' was not found.".format(order_id))
-    item_found = False
-    return_item = None
-    for item in order.order_items:
-        if item.id == item_id:
-            item_found = True
-            item.deserialize(request.get_json())
-            item.id = item_id
-            item.save()
-            order.save()
-            return_item = item
-            break
-    if not item_found:
-        raise NotFound("Item with id '{}' was not found.".format(item_id))
-    return make_response(jsonify(return_item.serialize()), status.HTTP_200_OK)
-
-
-
-
-
 ######################################################################
 #  PATH: /orders/{order_id}/items/{item_id}
 ######################################################################
@@ -346,6 +317,7 @@ class OrderItemResource(Resource):
     OrderItemResource class
     Allows the manipulation of a single Order Item
     GET /orders/{order_id}/items/{item_id} - Retrieve an Order Item with the id
+    PUT /orders/{order_id}/items/{item_id} - Update an Order Item with the id
     """
     # ------------------------------------------------------------------
     # RETRIEVE AN ITEM IN AN ORDER
@@ -375,6 +347,37 @@ class OrderItemResource(Resource):
         print(item_obj)
         return item_obj, status.HTTP_200_OK
 
+    # ------------------------------------------------------------------
+    # UPDATE AN ITEM IN AN ORDER
+    # ------------------------------------------------------------------
+    @api.doc('update_order_item')
+    @api.response(404, 'Item not found')
+    @api.response(400, 'The posted item data was not valid')
+    @api.expect(item_model)
+    @api.marshal_with(item_model)
+    def put(self, order_id, item_id):
+        """
+           Update an item in an Order
+           This endpoint will update an Order's item based the id that is posted
+        """
+        app.logger.info("Request to update the item id: %s in order id: %s", item_id, order_id)
+        order = Order.find(order_id)
+        if not order:
+            abort(status.HTTP_404_NOT_FOUND, "Order was not found.")
+        item_found = False
+        return_item = None
+        for item in order.order_items:
+            if item.id == item_id:
+                item_found = True
+                item.deserialize(request.get_json())
+                item.id = item_id
+                item.save()
+                order.save()
+                return_item = item
+                break
+        if not item_found:
+            abort(status.HTTP_404_NOT_FOUND, "Item with id '{}' was not found.".format(item_id))
+        return return_item.serialize(), status.HTTP_200_OK
 
 ######################################################################
 # DELETE AN ITEM IN AN ORDER
