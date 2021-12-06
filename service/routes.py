@@ -349,7 +349,7 @@ class OrderItemResource(Resource):
     @api.doc('update_order_item')
     @api.response(404, 'Item not found')
     @api.response(400, 'The posted item data was not valid')
-    @api.expect(item_model)
+    @api.expect(create_item_model)
     @api.marshal_with(item_model)
     def put(self, order_id, item_id):
         """
