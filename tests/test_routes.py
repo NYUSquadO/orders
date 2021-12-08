@@ -184,8 +184,6 @@ class TestOrderResourceServer(TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
     
-
-
     def test_get_order_list(self):
         """List all Orders"""
         self._create_orders(5)

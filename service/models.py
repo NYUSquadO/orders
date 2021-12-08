@@ -169,13 +169,10 @@ class Order(db.Model):
                 try:  
                     item_id = int(order_item['item_id'])
                 except ValueError as error:
-                    raise DataValidationError("Invalid Order:item_id must be int " + error.args[0])
-                try:  
-                    item_name = str(order_item['item_name'])
-                    if not item_name:
-                        raise DataValidationError("Invalid Order:item_name must exist ")
-                except ValueError as error:
-                    raise DataValidationError("Invalid Order:item_name must exist " + error.args[0])
+                    raise DataValidationError("Invalid Order:item_id must be int " + error.args[0])  
+                item_name = str(order_item['item_name'])
+                if not item_name:
+                    raise DataValidationError("Invalid Order:item_name must exist ")
                 try:  
                     item_qty = int(order_item['item_qty'])
                 except ValueError as error:
