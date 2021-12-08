@@ -357,7 +357,9 @@ $(function () {
     // ****************************************
     $("#clear-btn").click(function () {
         $("#order_id").val("");
+        flash_message()
         clear_form_data()
+        $("#search_results").empty();
     });
 
 
