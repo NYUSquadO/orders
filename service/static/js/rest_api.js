@@ -173,7 +173,7 @@ $(function () {
                 update_form_data(firstOrder)
             }
 
-            flash_message("Success")
+            flash_message(`Success. Query returns ${res.length} order(s).`)
         });
 
         ajax.fail(function(res){
@@ -228,7 +228,7 @@ $(function () {
                 update_form_data(firstOrder)
             }
 
-            flash_message("Success")
+            flash_message(`Success. Query returns ${res.length} order(s).`)
         });
 
         ajax.fail(function(res){
@@ -336,6 +336,10 @@ $(function () {
                 listItems(res);
                 flash_message(`Success. List returns ${res.length} item(s).`);
             });
+
+            ajax.fail(function(res){
+                flash_message(`Order was not found for order_id = ${order_id}.`)
+            });
         }
         else {
             flash_message(`Order_id is required to list the items in it`);
@@ -345,7 +349,6 @@ $(function () {
             flash_message(res.responseJSON.message)
         });
         
-        
     });
 
 
@@ -354,7 +357,9 @@ $(function () {
     // ****************************************
     $("#clear-btn").click(function () {
         $("#order_id").val("");
+        flash_message()
         clear_form_data()
+        $("#search_results").empty();
     });
 
 
