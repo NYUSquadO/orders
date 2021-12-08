@@ -19,7 +19,6 @@ from .factories import OrderFactory, OrderItemFactory
 
 DATABASE_URI = config.DATABASE_URI
 BASE_API = "/api/orders"
-BASE_URL = "/orders" #TODO : Delete this after all apis refactored with restx
 CONTENT_TYPE_JSON = "application/json"
 
 ######################################################################
@@ -306,18 +305,18 @@ class TestOrderResourceServer(TestCase):
         new_order_item = resp.get_json()
         item_id = new_order_item['id']
         # Delete the item
-        resp = self.app.delete("/orders/{}/items/{}".format(order.id, item_id))
+        resp = self.app.delete("/api/orders/{}/items/{}".format(order.id, item_id))
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_delete_item_order_not_found(self):
         """ Delete an Item where order does not exist"""
-        resp = self.app.delete("/orders/{}/items/{}".format(0, 0))
+        resp = self.app.delete("/api/orders/{}/items/{}".format(0, 0))
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_delete_item_item_not_found(self):
         """ Delete an Item where item does not exist"""
         order = self._create_orders(1)[0]
-        resp = self.app.delete("/orders/{}/items/{}".format(order.id, 0))
+        resp = self.app.delete("/api/orders/{}/items/{}".format(order.id, 0))
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
 
