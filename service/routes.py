@@ -318,6 +318,7 @@ class OrderItemResource(Resource):
     Allows the manipulation of a single Order Item
     GET /orders/{order_id}/items/{item_id} - Retrieve an Order Item with the id
     PUT /orders/{order_id}/items/{item_id} - Update an Order Item with the id
+    DELETE /orders/{order_id}/items/{item_id} - Delete order item
     """
     # ------------------------------------------------------------------
     # RETRIEVE AN ITEM IN AN ORDER
@@ -379,29 +380,30 @@ class OrderItemResource(Resource):
             abort(status.HTTP_404_NOT_FOUND, "Item with id '{}' was not found.".format(item_id))
         return return_item.serialize(), status.HTTP_200_OK
 
-######################################################################
-# DELETE AN ITEM IN AN ORDER
-######################################################################
-@app.route("/orders/<int:order_id>/items/<int:item_id>", methods=["DELETE"])
-def delete_item(order_id, item_id):
-    """
-    Delete an Item in an Order
-    This endpoint will delete an Item based on the order_id and item_id specified in the path
-    """
-    app.logger.info("Request to delete an item in order %s with item_id: %s", order_id, item_id)
-    order = Order.find(order_id)
-    
-    if order:
-        for item in order.order_items:
-            if item.id == item_id:
-                item_found = True
-                item.delete()
-                order.save()
-                break
-    
-    app.logger.info("Item with ID [%s] in order %s is deleted.", item_id, order_id)
-    
-    return make_response("", status.HTTP_204_NO_CONTENT)
+    #------------------------------------------------------------------
+    # DELETE AN ITEM IN AN ORDER
+    #------------------------------------------------------------------
+    @api.doc('delete_item')
+    @api.response(204, 'Item deleted')
+    def delete(self, order_id, item_id):
+        """
+        Delete an Item in an Order
+        This endpoint will delete an Item based on the order_id and item_id specified in the path
+        """
+        app.logger.info("Request to delete an item in order %s with item_id: %s", order_id, item_id)
+        order = Order.find(order_id)
+
+        if order:
+            for item in order.order_items:
+                if item.id == item_id:
+                    item_found = True
+                    item.delete()
+                    order.save()
+                    app.logger.info("Item with ID [%s] in order %s is deleted.", item_id, order_id)
+                    break
+
+        return '', status.HTTP_204_NO_CONTENT
+
 
 ######################################################################
 # PATH: /orders/{order_id}/cancel
