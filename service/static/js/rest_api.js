@@ -78,29 +78,43 @@ $(function () {
         var item_name = $("#item_name").val() + "";
         var item_qty = $("#item_qty").val() + "";
         var item_price = $("#item_price").val() + "";
+        
+        if (!cust_id){
+            flash_message(`Cust_id is required for creating an order.`);
+        } else if (!item_id){
+            flash_message(`Item_id is required for creating an order.`);
+        } else if (!item_name){
+            flash_message(`Item_name is required for creating an order.`);
+        } else if (!item_qty){
+            flash_message(`Item_qty is required for creating an order.`);
+        } else if (!item_price){
+            flash_message(`Item_price is required for creating an order.`);
+        } else {
+            var item = {};
+            item["item_id"] = item_id;
+            item["item_name"] = item_name;
+            item["item_qty"] = item_qty;
+            item["item_price"] = item_price;
+            data["order_items"].push(item);
 
-        var item = {};
-        item["item_id"] = item_id;
-        item["item_name"] = item_name;
-        item["item_qty"] = item_qty;
-        item["item_price"] = item_price;
-        data["order_items"].push(item);
+            var ajax = $.ajax({
+                type: "POST",
+                url: "/api/orders",
+                contentType: "application/json",
+                data: JSON.stringify(data),
+            });
 
-        var ajax = $.ajax({
-            type: "POST",
-            url: "/api/orders",
-            contentType: "application/json",
-            data: JSON.stringify(data),
-        });
+            ajax.done(function(res){
+                update_form_data(res)
+                flash_message("Success")
+            });
 
-        ajax.done(function(res){
-            update_form_data(res)
-            flash_message("Success")
-        });
+            ajax.fail(function(res){
+                flash_message(res.responseJSON.message)
+            });
 
-        ajax.fail(function(res){
-            flash_message(res.responseJSON.message)
-        });
+        }
+        
     });
 
     // Cancel an Order

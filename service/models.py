@@ -166,9 +166,24 @@ class Order(db.Model):
             self.cust_id = int(data["cust_id"])
             order_items = data["order_items"]
             for order_item in order_items:
-                self.order_items.append(OrderItem(item_id = order_item['item_id'] , \
-                    item_name = order_item['item_name'] , item_qty = order_item['item_qty'], \
-                    item_price = order_item['item_price'] ))
+                try:  
+                    item_id = int(order_item['item_id'])
+                except ValueError as error:
+                    raise DataValidationError("Invalid Order:item_id must be int " + error.args[0])  
+                item_name = str(order_item['item_name'])
+                if not item_name:
+                    raise DataValidationError("Invalid Order:item_name must exist ")
+                try:  
+                    item_qty = int(order_item['item_qty'])
+                except ValueError as error:
+                    raise DataValidationError("Invalid Order:item_qty must be int " + error.args[0])
+                try:  
+                    item_price = float(order_item['item_price'])
+                except ValueError as error:
+                    raise DataValidationError("Invalid Order:item_price must be float " + error.args[0])
+                self.order_items.append(OrderItem(item_id = item_id , \
+                    item_name = item_name , item_qty = item_qty, \
+                    item_price = item_price ))
 
         except KeyError as error:
             raise DataValidationError(

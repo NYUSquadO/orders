@@ -140,6 +140,50 @@ class TestOrderResourceServer(TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_create_order_bad_itemid(self):
+        """ Create Order with bad item ID data """
+        order = OrderFactory()
+        logging.debug(order)
+        test_order = order.serialize()
+        test_order["order_items"][0]["item_id"] = "item_ID"    # wrong data type
+        resp = self.app.post(
+            BASE_API, json=test_order, content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_order_bad_itemname(self):
+        """ Create Order with bad item_name data """
+        order = OrderFactory()
+        logging.debug(order)
+        test_order = order.serialize()
+        test_order["order_items"][0]["item_name"] = ""   # wrong data
+        resp = self.app.post(
+            BASE_API, json=test_order, content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_order_bad_itemqty(self):
+        """ Create Order with bad item qty data """
+        order = OrderFactory()
+        logging.debug(order)
+        test_order = order.serialize()
+        test_order["order_items"][0]["item_qty"] = "item_qty"    # wrong data type
+        resp = self.app.post(
+            BASE_API, json=test_order, content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_order_bad_itemprice(self):
+        """ Create Order with bad item price data """
+        order = OrderFactory()
+        logging.debug(order)
+        test_order = order.serialize()
+        test_order["order_items"][0]["item_price"] = "item_price"    # wrong data type
+        resp = self.app.post(
+            BASE_API, json=test_order, content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+    
     def test_get_order_list(self):
         """List all Orders"""
         self._create_orders(5)
